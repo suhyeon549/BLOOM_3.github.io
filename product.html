@@ -1,0 +1,2251 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BLOOM</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    p {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #e0e0e0;
+      overflow-x: hidden;
+    }
+
+    #scaler {
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+      display: block;
+    }
+
+    #canvas {
+      width: 1920px;
+      height: 6780px;
+      position: absolute;
+      top: 0;
+      background: white;
+      overflow: hidden;
+    }
+
+    /* Blur Reveal Animation */
+    .blur-init {
+      filter: blur(24px);
+    }
+
+    .reveal-blur {
+      animation: blurReveal 1.5s ease-out forwards;
+    }
+
+    @keyframes blurReveal {
+      0% {
+        filter: blur(24px);
+      }
+
+      100% {
+        filter: blur(0);
+      }
+    }
+
+    /* Product Page Specific Animations */
+    .prod-fade-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease-out, transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: opacity, transform;
+    }
+
+    .prod-fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .prod-fade-btn {
+      opacity: 0;
+      transform: translateY(40px);
+      /* Includes the button hover transitions so they aren't lost */
+      transition: opacity 1s ease-out, transform 1s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease !important;
+      will-change: opacity, transform;
+    }
+
+    .prod-fade-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Header Entrance Animations */
+    #header-logo-container {
+      opacity: 0;
+    }
+
+    .reveal-logo {
+      animation: fadeInLogo 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeInLogo {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .header-nav-link {
+      opacity: 0;
+      transform: translateX(15px);
+    }
+
+    .reveal-menu {
+      animation: slideInMenu 0.4s ease-out forwards;
+    }
+
+    @keyframes slideInMenu {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .curation-btn {
+      background-color: #f4f4f4 !important;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .curation-btn:hover {
+      background-color: #e0e0e0 !important;
+    }
+
+    .curation-btn.selected {
+      background-color: #000000 !important;
+    }
+
+    .curation-btn.selected p {
+      color: #ffffff !important;
+    }
+
+    .curation-arrow {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: opacity 1s ease-out, transform 1s ease-out;
+    }
+
+    .curation-arrow.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .curation-arrow.fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+
+    #curation-cards-container {
+      transition: transform 1s ease-out, opacity 1s ease-out;
+    }
+
+    #curation-cards-container.slide-out-left {
+      transform: translateX(-100px);
+      opacity: 0;
+    }
+
+    .reveal-semi-blur {
+      animation: blurSemiReveal 1.5s ease-out forwards;
+    }
+
+    @keyframes blurSemiReveal {
+      0% {
+        opacity: 0;
+        filter: blur(24px);
+        transform: translateY(40px);
+      }
+
+      100% {
+        opacity: 1;
+        filter: blur(4px);
+        transform: translateY(0);
+      }
+    }
+
+    .phrase-line {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .phrase-line.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-semi-blur-strong {
+      animation: blurSemiRevealStrong 1.5s ease-out forwards;
+    }
+
+    @keyframes blurSemiRevealStrong {
+      0% {
+        opacity: 0;
+        transform: translateY(40px);
+        filter: blur(0px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(30px);
+      }
+    }
+  </style>
+  <link href="interactions.css?v=5" rel="stylesheet" />
+
+  <style>
+    #curation-cards-container {
+      transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+    }
+
+    #curation-cards-container.slide-out-left {
+      transform: translateX(-50px) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
+  <link rel="stylesheet" href="liquid-blob.css">
+</head>
+
+
+<body>
+  <div id="header-scaler"
+    style="position: fixed; top: 0; left: 0; width: 1920px; z-index: 9999; pointer-events: none; transform-origin: top left;">
+    <header
+      style="position: relative; left: 15px; width: 100%; height: 114px; background-color: transparent; pointer-events: auto;">
+      <div id="header-logo-container" class="" data-node-id="71:837" data-name="Group 1 (1) 1"
+        style="position: absolute; height: 74px; left: 40px; top: 20px; width: 135px; cursor: pointer;"
+        onclick="window.navigateTo('index.html', 0);"><img id="header-logo-img" alt="" class=""
+          src="assets/8b2a1f19e6af28330d562fc1475d0896e8becd6e.png"
+          style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; max-width: none; object-fit: cover; pointer-events: none; width: 100%; height: 100%; transition: opacity 0.3s ease;" />
+      </div>
+      <p class="header-nav-link" data-node-id="71:735"
+        style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1; left: 1280px; font-style: normal; color: #1e1e1e; font-size: 20px; top: 47px; white-space: nowrap; cursor: pointer; transition: color 0.5s ease;"
+        onclick="window.navigateTo('index.html', 1);">
+        ABOUT</p>
+      <p class="header-nav-link" data-node-id="71:736"
+        style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1; left: 1435px; font-style: normal; color: #1e1e1e; font-size: 20px; top: 47px; white-space: nowrap; cursor: pointer; transition: color 0.5s ease;"
+        onclick="window.navigateTo('Team.html', 0);">
+        TEAM</p>
+      <p class="header-nav-link" data-node-id="71:737"
+        style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1; left: 1590px; font-style: normal; color: #1e1e1e; font-size: 20px; top: 47px; white-space: nowrap; cursor: pointer; transition: color 0.5s ease;"
+        onclick="window.navigateTo('product.html', 0);">PRODUCTS</p>
+    </header>
+  </div>
+  <div id="scaler">
+    <div id="canvas">
+      <div class="" data-node-id="105:73" data-name="Product Page"
+        style="position: relative; width: 100%; height: 100%">
+        <div class="" data-node-id="71:918" data-name="1. Product-Hero" style="
+              position: absolute;
+              background-color: white;
+              height: 1080px;
+              left: 0;
+              top: 0;
+              width: 1920px;
+            ">
+          <div class="-translate-y-1/2 top-1/2" data-node-id="71:919" data-name="image 336" style="
+                transform: translateX(-50%);
+                position: absolute;
+                height: 1080px;
+                left: 50%;
+                width: 1920px;
+              ">
+            <video src="assets/products-video.mp4" autoplay loop muted playsinline style="
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
+                  max-width: none;
+                  object-fit: cover;
+                  pointer-events: none;
+                  width: 100%;
+                  height: 100%;
+                "></video>
+          </div>
+          <div class="-translate-y-1/2 top-1/2" data-node-id="71:979" style="
+                transform: translateX(-50%);
+                position: absolute;
+                display: contents;
+                left: 50%;
+              ">
+            <div class="hero-card-position-wrapper"
+              style="position: absolute; left: 660px; top: 330px; width: 600px; height: 304px; z-index: 10;">
+              <div class="tilt-card-wrapper"
+                style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.1s ease-out;">
+                <div class="blur-init" data-node-id="71:980" style="
+                    position: absolute;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    transform: translateZ(0px);
+                  ">
+                  <img alt="" class="" src="assets/9fba4b67ddf225463bc68b74f91a73cb3f328d99.svg" style="
+                      position: absolute;
+                      display: block;
+                      top: 0;
+                      right: 0;
+                      bottom: 0;
+                      left: 0;
+                      max-width: none;
+                      width: 100%;
+                      height: 100%;
+                    " />
+                </div>
+                <p class="prod-fade-up" data-node-id="71:986" style="
+                    word-break: break-word;
+                    position: absolute;
+                    font-family:
+                      &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                    font-weight: 550;
+                    line-height: 1.1;
+                    left: 88px;
+                    font-style: normal;
+                    color: #1e1e1e;
+                    font-size: 36px;
+                    top: 67px;
+                    letter-spacing: -1.08px;
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                    transform: translateZ(40px);
+                  ">
+                  BLOOM Mood Curation
+                </p>
+                <div class="buttons-wrapper" style="
+                    position: absolute;
+                    display: flex;
+                    gap: 12px; /* 두 버튼 사이 간격 */
+                    left: 130px; /* 래퍼의 left 값 (원하는 대로 조절하세요) */
+                    top: 196px;
+                    transform: translateZ(60px);
+                ">
+                  <div class="btn-interactive prod-fade-btn" data-node-id="71:987" style="
+                      border-width: 1px;
+                      border-color: #1e1e1e;
+                      border-style: solid;
+                      align-content: stretch;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      padding-left: 20px;
+                      padding-right: 20px;
+                      padding-top: 12px;
+                      padding-bottom: 12px;
+                      border-radius: 500px;
+                      cursor: pointer;
+                    " onclick="alert('서비스 점검 중입니다.');">
+                    <p class="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both]" data-node-id="71:988" style="
+                        word-break: break-word;
+                        font-family:
+                          &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                        line-height: 1;
+                        font-style: normal;
+                        position: relative;
+                        flex-shrink: 0;
+                        color: #1e1e1e;
+                        font-size: 20px;
+                        letter-spacing: -0.6px;
+                        white-space: nowrap;
+                      ">
+                      Find My Bloom
+                    </p>
+                  </div>
+                  <div class="btn-interactive prod-fade-btn" data-node-id="71:989" style="
+                      border-width: 1px;
+                      border-color: #1e1e1e;
+                      border-style: solid;
+                      align-content: stretch;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      padding-left: 20px;
+                      padding-right: 20px;
+                      padding-top: 12px;
+                      padding-bottom: 12px;
+                      border-radius: 500px;
+                      cursor: pointer;
+                    " onclick="window.location.hash = '#section1';">
+                    <p class="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both]" data-node-id="71:990" style="
+                        word-break: break-word;
+                        font-family:
+                          &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                        line-height: 1;
+                        font-style: normal;
+                        position: relative;
+                        flex-shrink: 0;
+                        color: #1e1e1e;
+                        font-size: 20px;
+                        letter-spacing: -0.6px;
+                        white-space: nowrap;
+                      ">
+                      Discover More
+                    </p>
+                  </div>
+                </div>
+                <div class="prod-fade-up" data-node-id="71:991" style="
+                    word-break: break-word;
+                    position: absolute;
+                    font-family: &quot;Pretendard&quot;, sans-serif;
+                    line-height: 0;
+                    left: 297.5px;
+                    font-style: normal;
+                    color: #1e1e1e;
+                    font-size: 20px;
+                    text-align: center;
+                    top: 122px;
+                    letter-spacing: -0.6px;
+                    white-space: nowrap;
+                    transform: translateZ(60px) translateX(-50%);
+                  ">
+                  <p class="" style="
+                      line-height: 1.4;
+                      margin-bottom: 0;
+                    ">오늘의 기분, 날씨, 계절에 맞춰 나에게 어울리는 비누를<br>추천받아보세요.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="" data-node-id="71:928" data-name="2. Product-Problem" style="
+              position: absolute;
+              background-color: white;
+              height: 1080px;
+              left: 0;
+              overflow: hidden;
+              top: 1080px;
+              width: 1920px;
+            ">
+          <div class="product-problem-wrapper"
+            style="position: absolute; top: -40px; left: 0; width: 100%; height: 100%;">
+            <div class="prod-fade-up" data-node-id="71:929" style="
+                position: absolute;
+                height: 380px;
+                left: calc(41.67% + 15px);
+                top: 150px;
+                width: 600px;
+              ">
+              <img alt="" class="" src="assets/62a47e9065cde875e02adda2a302aedd959111d4.png" style="
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
+                  max-width: none;
+                  pointer-events: none;
+                  width: 100%;
+                  height: 100%;
+                " />
+            </div>
+            <div class="prod-fade-up" data-node-id="71:930" style="
+                position: absolute;
+                height: 380px;
+                left: calc(50% + 98px);
+                top: 550px;
+                width: 600px;
+              ">
+              <img alt="" class="" src="assets/6f402b33175b65a099ac415ef57e6678801d5f04.png" style="
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
+                  max-width: none;
+                  pointer-events: none;
+                  width: 100%;
+                  height: 100%;
+                " />
+            </div>
+            <div class="prod-fade-up" data-node-id="71:931" style="
+                position: absolute;
+                height: 380px;
+                left: calc(75% - 5px);
+                top: 150px;
+                width: 600px;
+              ">
+              <img alt="" class="" src="assets/6cb7fae351584eaf047fd28282640670356c9e9c.png" style="
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
+                  max-width: none;
+                  pointer-events: none;
+                  width: 100%;
+                  height: 100%;
+                " />
+            </div>
+            <div class="" data-node-id="71:933" style="
+                transform: translateX(-50%);
+                word-break: break-word;
+                position: absolute;
+                display: contents;
+                left: calc(54.17% + 23px);
+                font-style: normal;
+                color: #ffffff;
+                font-size: 20px;
+                top: 368px;
+                letter-spacing: -0.6px;
+                white-space: nowrap;
+              ">
+              <p class="prod-fade-up" data-node-id="71:934" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(54.17% - 185px);
+                  top: 396px;
+                ">
+                원하는 상태를 기준으로 고르기 어려움
+              </p>
+              <div class="prod-fade-up" data-node-id="71:935" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 0;
+                  left: calc(54.17% - 185px);
+                  top: 434px;
+                  font-size: 18px;
+                ">
+                <p class="" style="line-height: 1.4; margin-bottom: 0">
+                  비누 제품은 다양하지만, 사용자가 원하는 기분, 날씨,
+                </p>
+                <p class="" style="line-height: 1.4">
+                  계절, 분위기를 기준으로 제품을 추천받기는 어렵습니다.
+                </p>
+              </div>
+              <p class="prod-fade-up" data-node-id="71:936" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(45.83% - 25px);
+                  top: 368px;
+                ">
+                ( 01 )
+              </p>
+            </div>
+            <div class="" data-node-id="71:937" style="
+                transform: translateX(-50%);
+                word-break: break-word;
+                position: absolute;
+                display: contents;
+                left: calc(70.83% - 54px);
+                font-style: normal;
+                color: #ffffff;
+                font-size: 20px;
+                top: 740px;
+                letter-spacing: -0.6px;
+                white-space: nowrap;
+              ">
+              <p class="prod-fade-up" data-node-id="71:938" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(62.5% - 102px);
+                  top: 768px;
+                ">
+                사용 순간까지 이어지지 못하는 경험
+              </p>
+              <div class="prod-fade-up" data-node-id="71:939" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 0;
+                  left: calc(70.83% - 262px);
+                  top: 806px;
+                  font-size: 18px;
+                ">
+                <p class="" style="line-height: 1.4; margin-bottom: 0">
+                  비누를 구매하기 전, 이 제품이 어떤 상황에서
+                </p>
+                <p class="" style="line-height: 1.4; margin-bottom: 0">
+                  어울리고, 손 씻는 순간을 어떤 분위기로 만들어줄지까지
+                </p>
+                <p class="" style="line-height: 1.4">제안받기는 어렵습니다.</p>
+              </div>
+              <p class="prod-fade-up" data-node-id="71:940" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(58.33% - 22px);
+                  top: 740px;
+                ">
+                ( 03 )
+              </p>
+            </div>
+            <div class="" data-node-id="71:941" style="
+                transform: translateX(-50%);
+                word-break: break-word;
+                position: absolute;
+                display: contents;
+                left: calc(87.5% - 70px);
+                font-style: normal;
+                color: #ffffff;
+                font-size: 20px;
+                top: 368px;
+                letter-spacing: -0.6px;
+                white-space: nowrap;
+              ">
+              <p class="prod-fade-up" data-node-id="71:942" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(87.5% - 205px);
+                  top: 396px;
+                ">
+                제품 정보에 머무르는 선택 방식
+              </p>
+              <div class="prod-fade-up" data-node-id="71:943" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 0;
+                  left: calc(87.5% - 205px);
+                  top: 434px;
+                  font-size: 18px;
+                ">
+                <p class="" style="line-height: 1.4; margin-bottom: 0">
+                  대부분의 비누 정보는 향, 성분, 기능,
+                </p>
+                <p class="" style="line-height: 1.4">
+                  패키지 중심으로 제공됩니다.
+                </p>
+              </div>
+              <p class="prod-fade-up" data-node-id="71:944" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(79.17% - 45px);
+                  top: 368px;
+                ">
+                ( 02 )
+              </p>
+            </div>
+            <div class="prod-fade-up" data-node-id="71:945" style="
+                word-break: break-word;
+                position: absolute;
+                font-family:
+                  &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                font-weight: 600;
+                line-height: 0.95;
+                left: 40px;
+                font-style: normal;
+                color: #1e1e1e;
+                font-size: 64px;
+                top: 152px;
+                letter-spacing: -1.92px;
+                width: 800px;
+              ">
+              <p class="" style="margin-bottom: 0; white-space: nowrap;">BLOOM,<br>CHOSEN TO<br>MATCH YOUR MOOD</p>
+            </div>
+            <div id="typewriter-text-container" class="" data-node-id="79:96" style="
+                word-break: break-word;
+                position: absolute;
+                font-family: &quot;Pretendard&quot;, sans-serif;
+                line-height: 0;
+                left: calc(12.5% - 200px);
+                font-style: normal;
+                color: #1e1e1e;
+                font-size: 20px;
+                top: 362px;
+                letter-spacing: -0.6px;
+                white-space: nowrap;
+                opacity: 0;
+              ">
+              <p class="tw-p" style="line-height: 1.4; margin-bottom: 0"></p>
+              <p class="tw-p" style="line-height: 1.4; margin-bottom: 0"></p>
+              <p class="tw-p" style="line-height: 1.4; margin-bottom: 0"></p>
+              <p class="tw-p" style="line-height: 1.4; margin-bottom: 0"></p>
+              <p class="tw-p" style="line-height: 1.4; margin-bottom: 0"></p>
+              <p class="tw-p" style="line-height: 1.4"></p>
+            </div>
+          </div>
+        </div>
+        <div class="" data-node-id="71:946" data-name="3. Product-How it works" style="
+              position: absolute;
+              background-color: black;
+              height: 1080px;
+              left: 0;
+              overflow: hidden;
+              top: 2160px;
+              width: 1920px;
+            ">
+          <div class="-translate-y-1/2 top-1/2" data-node-id="71:947" data-name="image 337" style="
+                transform: translateX(-50%);
+                position: absolute;
+                height: 1380px;
+                left: 50%;
+                width: 2070px;
+              ">
+            <video src="assets/package-video.mp4" autoplay loop muted playsinline style="
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
+                  max-width: none;
+                  object-fit: cover;
+                  pointer-events: none;
+                  width: 100%;
+                  height: 100%;
+                "></video>
+          </div>
+          <div class="-translate-y-1/2 top-1/2" data-node-id="71:948"
+            style="position: absolute; display: contents; left: 40px">
+            <div class="how-it-works-wrapper"
+              style="position: absolute; top: -50px; left: 0; width: 100%; height: 100%;">
+              <div class="prod-fade-up step-01" data-node-id="71:949" style="
+                  position: absolute;
+                  display: contents;
+                  left: 40px;
+                  top: 168px;
+                ">
+                <div class="" data-node-id="71:950" style="
+                    position: absolute;
+                    height: 412px;
+                    left: 40px;
+                    top: 168px;
+                    width: 600px;
+                  ">
+                  <img alt="" class="" src="assets/5d8ca2459e7b151d6334751bae70430184af934e.svg" style="
+                      position: absolute;
+                      display: block;
+                      top: 0;
+                      right: 0;
+                      bottom: 0;
+                      left: 0;
+                      max-width: none;
+                      width: 100%;
+                      height: 100%;
+                    " />
+                </div>
+                <div class="" data-node-id="71:956" style="
+                    word-break: break-word;
+                    position: absolute;
+                    display: contents;
+                    line-height: 0;
+                    left: 94px;
+                    font-style: normal;
+                    color: #1e1e1e;
+                    text-align: center;
+                    top: 288px;
+                    white-space: nowrap;
+                  ">
+                  <p class="" data-node-id="71:957" style="
+                      transform: translateX(-50%);
+                      position: absolute;
+                      font-family:
+                        &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                      font-weight: 600;
+                      left: 340.5px;
+                      font-size: 36px;
+                      top: 288px;
+                      letter-spacing: -2px;
+                    ">
+                    <span class="" style="line-height: 1.1">Step 0</span><span class=""
+                      style="line-height: 1.1; letter-spacing: -2.24px">1</span><span class=""
+                      style="line-height: 1.1">.
+                      Answer Your Mood</span>
+                  </p>
+                  <div class="" data-node-id="71:958" style="
+                      transform: translateX(-50%);
+                      position: absolute;
+                      font-family: &quot;Pretendard&quot;, sans-serif;
+                      left: calc(16.67% + 20.5px);
+                      font-size: 20px;
+                      top: calc(50% - 192px);
+                      letter-spacing: -0.6px;
+                      text-align: center;
+                      width: 100%;
+                      max-width: 600px;
+                    ">
+                    <p style="margin: 0; line-height: 1.4">
+                      사용하고 싶은 기분과 상황을 선택합니다.<br />사용자는
+                      비누를 사용할 떄 원하는 기분, 날씨, 게절, 분위기에 대한<br />짧은
+                      질문에 답합니다. 질문은 단계별로 제시되며,<br />사용자는
+                      자신이 중요하게 생각하는 기준을<br />단일 선택 또는 복수
+                      선택을 할 수 있습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="prod-fade-up step-02" data-node-id="71:959" style="
+                  position: absolute;
+                  display: contents;
+                  left: calc(33.33% + 20px);
+                  top: 500px;
+                ">
+                <div class="" data-node-id="71:960" style="
+                    position: absolute;
+                    height: 412px;
+                    left: calc(33.33% + 20px);
+                    top: 500px;
+                    width: 600px;
+                  ">
+                  <img alt="" class="" src="assets/5d8ca2459e7b151d6334751bae70430184af934e.svg" style="
+                      position: absolute;
+                      display: block;
+                      top: 0;
+                      right: 0;
+                      bottom: 0;
+                      left: 0;
+                      max-width: none;
+                      width: 100%;
+                      height: 100%;
+                    " />
+                </div>
+                <div class="" data-node-id="71:966" style="
+                    word-break: break-word;
+                    position: absolute;
+                    display: contents;
+                    left: calc(33.33% + 107px);
+                    font-style: normal;
+                    color: #1e1e1e;
+                    text-align: center;
+                    top: 634px;
+                    white-space: nowrap;
+                  ">
+                  <p class="" data-node-id="71:967" style="
+                      transform: translateX(-50%);
+                      position: absolute;
+                      font-family:
+                        &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                      font-weight: 600;
+                      line-height: 1.1;
+                      left: calc(33.33% + 320.5px);
+                      font-size: 36px;
+                      top: 634px;
+                      letter-spacing: -2px;
+                    ">
+                    Step 02. Soap Mood Cards
+                  </p>
+                  <div class="" data-node-id="71:968" style="
+                      transform: translateX(-50%);
+                      position: absolute;
+                      font-family: &quot;Pretendard&quot;, sans-serif;
+                      left: calc(50% + 0.5px);
+                      font-size: 20px;
+                      top: calc(50% + 154px);
+                      letter-spacing: -0.6px;
+                      text-align: center;
+                      width: 100%;
+                      max-width: 600px;
+                    ">
+                    <p style="margin: 0; line-height: 1.4">
+                      BLOOM은 답변을 바탕으로 어울리는 비누를 추천합니다.<br />각
+                      카드는 향, 색, 무드, 게절 키워드를 함께 보여주어<br />제품이
+                      가진 분위기를 한눈에 이해할 수 있도록 돕습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="prod-fade-up step-03" data-node-id="71:969" style="
+                  position: absolute;
+                  display: contents;
+                  left: 66.67%;
+                  top: 305px;
+                ">
+                <div class="" data-node-id="71:970" style="
+                    position: absolute;
+                    height: 412px;
+                    left: 66.67%;
+                    top: 305px;
+                    width: 600px;
+                  ">
+                  <img alt="" class="" src="assets/5d8ca2459e7b151d6334751bae70430184af934e.svg" style="
+                      position: absolute;
+                      display: block;
+                      top: 0;
+                      right: 0;
+                      bottom: 0;
+                      left: 0;
+                      max-width: none;
+                      width: 100%;
+                      height: 100%;
+                    " />
+                </div>
+                <div class="" data-node-id="71:976" style="
+                    word-break: break-word;
+                    position: absolute;
+                    display: contents;
+                    left: calc(66.67% + 20px);
+                    font-style: normal;
+                    color: #1e1e1e;
+                    text-align: center;
+                    top: 411px;
+                  ">
+                  <p class="" data-node-id="71:977" style="
+                      transform: translateX(-50%);
+                      position: absolute;
+                      font-family:
+                        &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                      font-weight: 600;
+                      line-height: 1.1;
+                      left: calc(66.67% + 300px);
+                      font-size: 36px;
+                      top: 411px;
+                      letter-spacing: -2px;
+                      width: 560px;
+                    ">
+                    Step 03. A Soap Stroy
+                  </p>
+                  <div class="" data-node-id="71:978" style="
+                      transform: translateX(-50%);
+                      position: absolute;
+                      font-family: &quot;Pretendard&quot;, sans-serif;
+                      left: calc(83.33% - 19.5px);
+                      font-size: 20px;
+                      top: calc(50% - 69px);
+                      letter-spacing: -0.6px;
+                      text-align: center;
+                      width: 100%;
+                      max-width: 600px;
+                    ">
+                    <p style="margin: 0; line-height: 1.4">
+                      비누에 어울리는 상황과 스토리를 살펴봅니다.<br />마음에
+                      드는 비누 카드를 클릭하면 그 비누의 무드 키워드와
+                      연결된<br />사용 상황, 짧은 스토리, 추천 이유를 확인할 수
+                      있습니다.<br />이를 통해 사용자는 비누를 단순한 세정
+                      제품이 아니라<br />나의 하루와 연결된 감성적인 오브제로
+                      느낄 수 있습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="" data-node-id="71:992" data-name="5. Product-Use Case" style="
+              position: absolute;
+              background-color: white;
+              height: 1080px;
+              left: 0;
+              overflow: hidden;
+              top: 4200px;
+              width: 1920px;
+            ">
+          <div data-node-id="231:240" data-name="image 382"
+            style="position: absolute; height: 1280px; left: 0px; top: -105px; width: 1920px;; background-color: transparent;">
+            <video src="assets/bubble-video.mp4" autoplay loop muted playsinline
+              style="position: absolute; height: 100%; left: 0; top: 0; width: 100%; object-fit: cover;"></video>
+          </div>
+          <div class="curation-text-anim" id="curation-text-2" data-node-id="215:202"
+            style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 0; left: 40px; font-style: normal; color: black; font-size: 20px; top: 224px; letter-spacing: -0.6px; white-space: nowrap;">
+            <p style="line-height: 1.4; margin-bottom: 0;">
+              선택한 기준을 기반으로 어울리는 비누를 찾아드립니다.
+              <br aria-hidden="true" />
+              향과 색, 그리고 무드까지 반영된 추천으로 나만의 감각적인 경험을 완성해보세요.
+            </p>
+            <p style="line-height: 1.4;">사용자는 Find My Bloom 버튼을 누르고 무드 큐레이션을 시작합니다.</p>
+          </div>
+          <p class="curation-text-anim" id="curation-text-1" data-node-id="215:203"
+            style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1.1; left: 40px; font-style: normal; color: black; font-size: 36px; top: 124px; letter-spacing: -1.08px; white-space: nowrap;">
+            DISCOVER YOUR SCENT MOOD
+            <br aria-hidden="true" />
+            BLOOM YOUR MOOD INTO SCENT
+          </p>
+          <div id="curation-arrow" class="curation-arrow"
+            style="position: absolute; z-index: 5; height: 6px; left: 1703px; top: 681px; width: 266px;">
+            <img alt="" src="assets/arrow1.png"
+              style="position: absolute; z-index: 5; top: 0; right: 0; bottom: 0; left: 0; max-width: none; object-fit: cover; pointer-events: none; width: 100%; height: 100%;" />
+          </div>
+          <div data-node-id="227:219" id="curation-cards-container" data-name="curation-cards-1"
+            style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 10; display: flex; justify-content: center; align-items: flex-start; padding-top: 383px; gap: 0px;">
+            <div class="curation-text-anim" id="curation-question-card" data-node-id="231:244" data-name="Component 4"
+              style="position: relative; height: 437px; width: 358px;">
+              <div data-node-id="215:205"
+                style="position: absolute; background-color: white; border: 1px solid black; top: 0; right: 0; bottom: 0; left: 0;">
+              </div>
+              <p data-node-id="215:217"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; top: 5.26%; right: 79.89%; bottom: 90.16%; left: 7.26%; line-height: 1.4; font-style: normal; color: #bcbcbc; font-size: 14px; letter-spacing: -0.42px; white-space: nowrap;">
+                01
+              </p>
+              <p data-node-id="237:50"
+                style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 600; top: 36.16%; right: 72.35%; bottom: 59.95%; left: 7.54%; line-height: 1.4; font-style: normal; color: #bcbcbc; font-size: 12px; letter-spacing: -0.36px; white-space: nowrap;">
+                *중복 선택 가능
+              </p>
+              <div data-node-id="215:223"
+                style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 700; top: 18.08%; right: 36.03%; bottom: 66.36%; left: 7.26%; line-height: 0; font-style: normal; color: #1e1e1e; font-size: 24px; letter-spacing: -0.72px; white-space: nowrap;">
+                <p style="line-height: 1.4; margin-bottom: 0; white-space: pre;">어떤 기준으로 </p>
+                <p style="line-height: 1.4; white-space: pre;">비누를 고르고 싶나요?</p>
+              </div>
+              <div data-node-id="215:245" data-name="button17" class="curation-btn"
+                style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 43.02%; right: 8.1%; bottom: 45.08%; left: 7.54%; padding-bottom: 13px; padding-left: 15px; padding-right: 253px; padding-top: 13px; border-radius: 4px;">
+                <p data-node-id="215:233"
+                  style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                  기분</p>
+              </div>
+              <div data-node-id="215:246" data-name="button16" class="curation-btn"
+                style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 56.98%; right: 8.1%; bottom: 31.12%; left: 7.54%; padding-bottom: 12px; padding-left: 15px; padding-right: 253px; padding-top: 12px; border-radius: 4px;">
+                <p data-node-id="215:235"
+                  style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                  날씨</p>
+              </div>
+              <div data-node-id="215:247" data-name="button15" class="curation-btn"
+                style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 70.94%; right: 8.1%; bottom: 17.16%; left: 7.54%; padding-bottom: 12px; padding-left: 15px; padding-right: 253px; padding-top: 12px; border-radius: 4px;">
+                <p data-node-id="215:237"
+                  style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                  계절</p>
+              </div>
+              <div id="curation-next-btn" class="next-btn"
+                style="position: absolute; display: flex; align-items: center; justify-content: center; top: 85%; right: 8.1%; left: 7.54%; height: 40px; background-color: black; color: white; border-radius: 4px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-out; z-index: 100;">
+                Next</div>
+
+
+
+
+            </div>
+            <div data-node-id="231:245" data-name="step2" class="curation-dynamic-card"
+              style="position: relative; height: 484px;   width: 358px;; ">
+              <div data-node-id="215:206"
+                style="position: absolute; background-color: white; border: 1px solid black; top: 0; right: 0; bottom: 9.71%; left: 0;">
+              </div>
+              <p data-node-id="215:219"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; top: 4.75%; right: 79.89%; bottom: 91.12%; left: 7.26%; line-height: 1.4; font-style: normal; color: #bcbcbc; font-size: 14px; letter-spacing: -0.42px; white-space: nowrap;">
+                02
+              </p>
+              <div data-node-id="231:232" data-name="2-button-group"
+                style="position: absolute; display: contents; top: 38.84%; right: 8.38%; bottom: 0; left: 7.26%;">
+                <div data-node-id="215:248" data-name="button14" class="curation-btn"
+                  style="position: absolute;  top: 38.84%; right: 8.38%; bottom: 50.41%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="215:249"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 16px; font-style: normal; font-size: 20px; color: black; top: 11px; letter-spacing: -0.6px; white-space: nowrap;">
+                    스트레스 받을 때</p>
+                </div>
+                <div data-node-id="215:250" data-name="button13" class="curation-btn"
+                  style="position: absolute;  top: 51.45%; right: 8.38%; bottom: 37.81%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="215:251"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 15px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    기분이 가라앉을 때</p>
+                </div>
+                <div data-node-id="215:252" data-name="button12" class="curation-btn"
+                  style="position: absolute;  top: 64.05%; right: 8.38%; bottom: 25.21%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="215:253"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 16px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    차분해지고 싶을 때</p>
+                </div>
+                <div data-node-id="218:51" data-name="button11" class="curation-btn"
+                  style="position: absolute;  top: 76.65%; right: 8.38%; bottom: 12.6%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="218:52"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 15px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    환기가 필요할 때</p>
+                </div>
+
+              </div>
+              <div data-node-id="215:225"
+                style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 700; top: 15.7%; right: 30.45%; bottom: 70.25%; left: 7.26%; line-height: 0; font-style: normal; color: #1e1e1e; font-size: 24px; letter-spacing: -0.72px; white-space: nowrap;">
+                <p style="line-height: 1.4; margin-bottom: 0; white-space: pre;">어떤 기분일 때 </p>
+                <p style="line-height: 1.4; white-space: pre;">비누를 사용하고 싶나요?</p>
+              </div>
+            </div>
+            <div data-node-id="231:246" data-name="step3" class="curation-dynamic-card"
+              style="position: relative; height: 483px;   width: 358px;; ">
+              <div data-node-id="215:208"
+                style="position: absolute; background-color: white; border: 1px solid black; top: 0; right: 0; bottom: 9.52%; left: 0;">
+              </div>
+              <p data-node-id="215:221"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; top: 4.76%; right: 79.89%; bottom: 91.1%; left: 7.26%; line-height: 1.4; font-style: normal; color: #bcbcbc; font-size: 14px; letter-spacing: -0.42px; white-space: nowrap;">
+                03
+              </p>
+              <div data-node-id="231:233" data-name="3-button-group"
+                style="position: absolute; display: contents; top: 38.92%; right: 8.38%; bottom: 0; left: 7.26%;">
+                <div data-node-id="218:59" data-name="button09" class="curation-btn"
+                  style="position: absolute;  top: 38.92%; right: 8.38%; bottom: 50.31%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="218:60"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 16px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    비 오는 날</p>
+                </div>
+                <div data-node-id="218:61" data-name="button08" class="curation-btn"
+                  style="position: absolute;  top: 51.55%; right: 8.38%; bottom: 37.68%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="218:62"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 15px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    화창한 날</p>
+                </div>
+                <div data-node-id="218:63" data-name="button07" class="curation-btn"
+                  style="position: absolute;  top: 64.18%; right: 8.38%; bottom: 25.05%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="218:64"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 16px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    습한 날</p>
+                </div>
+                <div data-node-id="218:66" data-name="button06" class="curation-btn"
+                  style="position: absolute;  top: 76.6%; right: 8.38%; bottom: 12.63%; left: 7.26%; border-radius: 4px;">
+                  <p data-node-id="218:67"
+                    style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: 15px; font-style: normal; font-size: 20px; color: black; top: 12px; letter-spacing: -0.6px; white-space: nowrap;">
+                    흐릿한 날</p>
+                </div>
+
+              </div>
+              <div data-node-id="215:227"
+                style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 700; top: 15.73%; right: 30.45%; bottom: 70.19%; left: 7.26%; line-height: 0; font-style: normal; color: #1e1e1e; font-size: 24px; letter-spacing: -0.72px; white-space: nowrap;">
+                <p style="line-height: 1.4; margin-bottom: 0; white-space: pre;">어떤 날씨에 </p>
+                <p style="line-height: 1.4; white-space: pre;">비누를 사용하고 싶나요?</p>
+              </div>
+            </div>
+            <div data-node-id="231:248" data-name="Component 7" class="curation-dynamic-card"
+              style="position: relative; height: 437px;   width: 358px;; ">
+              <div data-node-id="215:229"
+                style="position: absolute; background-color: white; border: 1px solid black; top: 0; right: 0; bottom: 0; left: 0;">
+              </div>
+              <p data-node-id="215:230"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; top: 5.26%; right: 79.89%; bottom: 90.16%; left: 7.26%; line-height: 1.4; font-style: normal; color: #bcbcbc; font-size: 14px; letter-spacing: -0.42px; white-space: nowrap;">
+                04
+              </p>
+              <div data-node-id="215:231"
+                style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 700; top: 17.39%; right: 30.45%; bottom: 67.05%; left: 7.26%; line-height: 0; font-style: normal; color: #1e1e1e; font-size: 24px; letter-spacing: -0.72px; white-space: nowrap;">
+                <p style="line-height: 1.4; margin-bottom: 0; white-space: pre;">어떤 계절에 </p>
+                <p style="line-height: 1.4; white-space: pre;">비누를 사용하고 싶나요?</p>
+              </div>
+              <div data-node-id="231:247"
+                style="position: absolute; display: contents; top: 43.02%; right: 8.38%; bottom: 3.2%; left: 7.26%;">
+                <div data-node-id="215:262" data-name="button04" class="curation-btn"
+                  style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 43.02%; right: 8.38%; bottom: 45.08%; left: 7.26%; padding-bottom: 13px; padding-right: 253px; padding-top: 13px; border-radius: 4px;">
+                  <p data-node-id="215:263"
+                    style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                    봄</p>
+                </div>
+                <div data-node-id="215:264" data-name="button03" class="curation-btn"
+                  style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 56.98%; right: 8.38%; bottom: 31.12%; left: 7.26%; padding-bottom: 12px; padding-left: 15px; padding-right: 253px; padding-top: 12px; border-radius: 4px;">
+                  <p data-node-id="215:265"
+                    style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                    여름</p>
+                </div>
+                <div data-node-id="215:266" data-name="button02" class="curation-btn"
+                  style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 70.94%; right: 8.38%; bottom: 17.16%; left: 7.26%; padding-bottom: 12px; padding-left: 15px; padding-right: 253px; padding-top: 12px; border-radius: 4px;">
+                  <p data-node-id="215:267"
+                    style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                    가을</p>
+                </div>
+                <div data-node-id="215:269" data-name="button01" class="curation-btn"
+                  style="position: absolute;  align-content: stretch; display: flex; align-items: center; justify-content: center; top: 84.9%; right: 8.38%; bottom: 3.2%; left: 7.26%; padding-bottom: 12px; padding-left: 15px; padding-right: 253px; padding-top: 12px; border-radius: 4px;">
+                  <p data-node-id="215:270"
+                    style="word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; font-style: normal; position: relative; flex-shrink: 0; color: #1e1e1e; font-size: 20px; letter-spacing: -0.6px; white-space: nowrap;">
+                    겨울</p>
+                </div>
+              </div>
+            </div>
+            <p id="curation-preview-text" data-node-id="215:276"
+              style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 500; line-height: 1.4; left: 875px; font-style: normal; color: black; font-size: 18px; top: 343px; letter-spacing: -0.54px; text-transform: uppercase; white-space: nowrap;">
+              Curation Preview
+            </p>
+
+          </div>
+
+          <!-- Curation Result Phase 2 -->
+          <div id="curation-result-container"
+            style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;">
+            <img id="curation-arrow-2" src="assets/arrow1.png"
+              style="position: absolute; left: 0; top: 681px; width: 266px; height: 6px; opacity: 0; transform: translateX(-100px); transition: opacity 1s ease, transform 1s ease;">
+
+            <!-- Wrapper for cards and phrase so top value can be adjusted easily -->
+            <div id="curation-result-wrapper"
+              style="position: absolute; left: 0; top: 380px; width: 1920px; height: 700px;">
+              <img class="curation-result-card" id="curation-result-card-1" src="assets/card1.png"
+                style="position: absolute; left: 370px; top: 0px; width: 383px; height: 467px; opacity: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); ">
+              <img class="curation-result-card" id="curation-result-card-2" src="assets/card2.png"
+                style="position: absolute; left: 768px; top: 0px; width: 383px; height: 467px; opacity: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); ">
+              <img class="curation-result-card" id="curation-result-card-3" src="assets/card3.png"
+                style="position: absolute; left: 1166px; top: 0px; width: 383px; height: 467px; opacity: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); ">
+
+              <div id="curation-phrase"
+                style="position: absolute; left: 0; top: 170px; width: 1920px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                <p class="phrase-line"
+                  style="font-size: 32px; font-weight: bold; margin: 0; margin-bottom: 10px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e1e1e; width: 100%; text-align: center;">
+                  Curated by your answers.<br>Scroll down and find your Bloom.</p>
+                <p class="phrase-line"
+                  style="font-size: 20px; font-weight: 400; color: #1e1e1e; margin: 0; font-family: 'Pretendard', sans-serif; width: 100%; text-align: center;">
+                  기분, 날씨, 계절 선택에 따라 추천 카드가 달라집니다.<br>아래로 스크롤해 나만의 Bloom을 찾아보세요.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="" data-node-id="71:1014" data-name="4. Product - Key Features" style="
+              word-break: break-word;
+              position: absolute;
+              background-color: #f8f4e7;
+              height: 960px;
+              left: 0;
+              font-style: normal;
+              overflow: hidden;
+              color: #1e1e1e;
+              top: 3240px;
+              width: 1920px;
+            ">
+          <div class="feat-titles-wrapper" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <p class="prod-fade-up feat-title-1" data-node-id="71:1015" style="
+                position: absolute;
+                font-family:
+                  &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                font-weight: 600;
+                line-height: 0.95;
+                left: calc(20.83% - 360px);
+                font-size: 120px;
+                top: 222px;
+                letter-spacing: -8.4px;
+                white-space: nowrap;
+              ">
+              4 CURATION
+            </p>
+            <p class="prod-fade-up feat-title-2" data-node-id="71:1016" style="
+                position: absolute;
+                font-family:
+                  &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                font-weight: 600;
+                line-height: 0.95;
+                left: calc(12.5% - 200px);
+                font-size: 120px;
+                top: 329px;
+                letter-spacing: -8.4px;
+                white-space: nowrap;
+              ">
+              STEPS
+            </p>
+            <p class="prod-fade-up feat-title-3" data-node-id="71:1017" style="
+                position: absolute;
+                font-family:
+                  &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                font-weight: 600;
+                line-height: 0.95;
+                left: calc(16.67% - 280px);
+                font-size: 120px;
+                top: 436px;
+                letter-spacing: -8.4px;
+                white-space: nowrap;
+              ">
+              OF BLOOM.
+            </p>
+          </div>
+          <div class="prod-fade-up feat-step-1" data-node-id="71:1018" style="
+                position: absolute;
+                font-family: &quot;Pretendard&quot;, sans-serif;
+                font-weight: 600;
+                line-height: 0;
+                left: calc(75% - 470px);
+                font-size: 20px;
+                top: 222px;
+                letter-spacing: -0.6px;
+                width: 910px;
+              ">
+            <p class="" style="line-height: 1.4; margin-bottom: 0">
+              #01 Mood-based Start
+            </p>
+            <p class="" style="
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 1.4;
+                ">
+              비누를 향이나 기능부터 고르는 것이 아니라, 사용자의 기분, 날씨, 계절, 원하는 분위기에서 선택을
+              시작합니다.<br>처음 접속한 사용자가 “이 서비스가 나에게 맞춰
+              추천해주는구나"를 바로 이해할 수 있도록 합니다.
+            </p>
+          </div>
+          <div class="prod-fade-up feat-step-2" data-node-id="71:1019" style="
+                position: absolute;
+                font-family: &quot;Pretendard&quot;, sans-serif;
+                font-weight: 600;
+                line-height: 0;
+                left: calc(75% - 470px);
+                font-size: 20px;
+                top: 366px;
+                letter-spacing: -0.6px;
+                width: 910px;
+              ">
+            <p class="" style="line-height: 1.4; margin-bottom: 0">
+              #02 Short & flexible Quiz
+            </p>
+            <p class="" style="
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 1.4;
+                ">
+              짧고 유연한 단계별 질문. BLOOM은 길고 복잡하지 않은 질문으로
+              구성됩니다. 사용자는 기분, 날씨, 계절 중<br>자신이 중요하게
+              생각하는 기준을 선택할 수 있고, 필요에 따라 복수
+              선택으로 더 섬세한 추천을 받을 수 있습니다.
+            </p>
+          </div>
+          <div class="prod-fade-up feat-step-3" data-node-id="71:1020" style="
+                position: absolute;
+                font-family: &quot;Pretendard&quot;, sans-serif;
+                font-weight: 600;
+                line-height: 0;
+                left: calc(75% - 470px);
+                font-size: 20px;
+                top: 510px;
+                letter-spacing: -0.6px;
+                width: 910px;
+              ">
+            <p class="" style="line-height: 1.4; margin-bottom: 0">
+              #03 Soap Mood Card
+            </p>
+            <p class="" style="
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 1.4;
+                ">
+              제품의 무드를 직관적으로 보여주는 추천 카드를 제공합니다. 단순한 상품 이미지가 아니라 향, 색, 무드 키워드가<br>함께
+              담긴 카드로 보여집니다. 이를 통해 사용자는 각 비누의
+              분위기 차이를 빠르게 이해할 수 있습니다.
+            </p>
+          </div>
+          <div class="prod-fade-up feat-step-4" data-node-id="71:1021" style="
+                position: absolute;
+                font-family: &quot;Pretendard&quot;, sans-serif;
+                font-weight: 600;
+                line-height: 0;
+                left: calc(75% - 470px);
+                font-size: 20px;
+                top: 654px;
+                letter-spacing: -0.6px;
+                width: 910px;
+              ">
+            <p class="" style="line-height: 1.4; margin-bottom: 0">
+              #04 Ritual Story
+            </p>
+            <p class="" style="
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 300;
+                  line-height: 1.4;
+                ">
+              각 비누의 향과 색을 특정한 기분, 날씨 사용 순간까지 연결하는
+              감성적인 스토리를 보여줍니다.<br>이를 통해 사용자는 “이 비누가
+              언제, 어떤 기분에 어울리는지"를 상상할 수 있고,<br>나아가 제품을 더
+              스토리가 담긴 비누로 받아들이게 됩니다.
+            </p>
+          </div>
+        </div>
+        <div class="" data-node-id="71:1022" data-name="6. Product-CTA" style="
+              position: absolute;
+              background-color: black;
+              height: 1080px;
+              left: 0;
+              overflow: hidden;
+              top: 5280px;
+              width: 1920px;
+            ">
+          <div class="-translate-y-1/2 top-1/2" data-node-id="71:1023" data-name="image 338" style="
+                transform: translateX(-50%);
+                position: absolute;
+                height: 1286px;
+                left: 50%;
+                width: 1920px;
+              ">
+            <video src="assets/shower-video.mp4" autoplay loop muted playsinline style="
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  bottom: 0;
+                  left: 0;
+                  max-width: none;
+                  object-fit: cover;
+                  pointer-events: none;
+                  width: 100%;
+                  height: 100%;
+                "></video>
+          </div>
+          <div class="" data-node-id="71:1024" style="
+                transform: translateX(-50%);
+                position: absolute;
+                display: contents;
+                left: 50%;
+                top: 338px;
+              ">
+            <div class="fade-up" data-node-id="71:1025" style="
+                  transform: translateX(-50%);
+                  word-break: break-word;
+                  position: absolute;
+                  font-family:
+                    &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                  font-weight: 600;
+                  line-height: 0;
+                  left: 50%;
+                  font-style: normal;
+                  color: #f7f7f7;
+                  font-size: 120px;
+                  text-align: center;
+                  top: 338px;
+                  letter-spacing: -8.4px;
+                  white-space: nowrap;
+                ">
+              <p class="" style="line-height: 0.95; margin-bottom: 0">
+                FIND A SOAP THAT
+              </p>
+              <p class="" style="line-height: 0.95">MATCHES YOUR MOOD</p>
+            </div>
+            <div class="" data-node-id="71:1026" style="
+                  transform: translateX(-50%);
+                  word-break: break-word;
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  line-height: 0;
+                  left: 50%;
+                  font-style: normal;
+                  color: #f7f7f7;
+                  font-size: 20px;
+                  text-align: center;
+                  top: 626px;
+                  letter-spacing: -0.6px;
+                  white-space: nowrap;
+                ">
+              <p class="" style="line-height: 1.4; margin-bottom: 0">
+                나의 무드에 맞는 비누를 찾아볼까요? 원하는 기분, 날씨, 계절을
+                선택하면 BLOOM이 그 순간에 어울리는 향과 색의 비누를
+                추천해드립니다.
+              </p>
+              <p class="" style="line-height: 1.4">
+                추천된 비누의 무드 카드와 스토리를 통해 손 씻는 시간을 나의
+                무드에 맞는 감성적인 순간으로 바꿔보세요!
+              </p>
+            </div>
+            <div class="" data-node-id="71:1027" style="
+                  transform: translateX(-50%);
+                  position: absolute;
+                  align-content: stretch;
+                  display: flex;
+                  gap: 10px;
+                  align-items: center;
+                  left: 50%;
+                  top: 702px;
+                ">
+              <div class="btn-interactive dark" data-node-id="71:1028" style="
+                    border-width: 1px;
+                    border-color: #f7f7f7;
+                    border-style: solid;
+                    align-content: stretch;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    padding-top: 12px;
+                    padding-bottom: 12px;
+                    position: relative;
+                    border-radius: 500px;
+                    flex-shrink: 0;
+                    cursor: pointer;
+                  " onclick="alert('서비스 점검 중입니다.');">
+                <p class="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both]" data-node-id="71:1029" style="
+                      word-break: break-word;
+                      font-family:
+                        &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                      line-height: 1;
+                      font-style: normal;
+                      position: relative;
+                      flex-shrink: 0;
+                      color: #f7f7f7;
+                      font-size: 20px;
+                      letter-spacing: -0.6px;
+                      white-space: nowrap;
+                    ">
+                  Find My Bloom
+                </p>
+              </div>
+              <!-- <div class="btn-interactive dark" data-node-id="71:1030" style="
+                    border-width: 1px;
+                    border-color: #f7f7f7;
+                    border-style: solid;
+                    align-content: stretch;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    padding-top: 12px;
+                    padding-bottom: 12px;
+                    position: relative;
+                    border-radius: 500px;
+                    flex-shrink: 0;
+                  ">
+                <p class="[text-box-edge:cap_alphabetic] [text-box-trim:trim-both]" data-node-id="71:1031" style="
+                      word-break: break-word;
+                      font-family:
+                        &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                      line-height: 1;
+                      font-style: normal;
+                      position: relative;
+                      flex-shrink: 0;
+                      color: #f7f7f7;
+                      font-size: 20px;
+                      letter-spacing: -0.6px;
+                      white-space: nowrap;
+                    ">
+                  View Soap Colleotion
+                </p>
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="" data-node-id="71:1032" data-name="7. Product-Footer" style="
+              word-break: break-word;
+              position: absolute;
+              background-color: #1e1e1e;
+              height: 420px;
+              left: 0;
+              overflow: hidden;
+              color: #f7f7f7;
+              top: 6360px;
+              width: 1920px;
+            ">
+          <div class="" data-node-id="71:1033" style="
+                position: absolute;
+                display: contents;
+                left: 40px;
+                top: 313px;
+                white-space: nowrap;
+              ">
+            <p class="" data-node-id="71:1034" style="
+                  position: absolute;
+                  font-family:
+                    &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                  font-weight: 500;
+                  line-height: 1.1;
+                  left: 111px;
+                  font-style: normal;
+                  font-size: 18px;
+                  top: 326px;
+                  letter-spacing: -0.72px;
+                ">
+              BLOOM A Mood-Based Soap Curation Service.
+            </p>
+            <p class="" data-node-id="71:1035" style="
+                  position: absolute;
+                  font-family: &quot;Pretendard&quot;, sans-serif;
+                  font-weight: 600;
+                  line-height: 1.4;
+                  left: calc(20.83% - 289px);
+                  font-style: normal;
+                  font-size: 18px;
+                  top: calc(50% + 142px);
+                  letter-spacing: -0.6px;
+                ">
+              기분, 날씨, 계절에 맞춰 나에게 어울리는 향과 색의 비누를
+              제안합니다.
+            </p>
+            <p class="" data-node-id="71:1036" style="
+                  position: absolute;
+                  font-family: &quot;Playfair Display&quot;, serif;
+                  font-style: italic;
+                  font-weight: normal;
+                  font-style: italic;
+                  line-height: 1.5;
+                  left: 40px;
+                  font-size: 48.023px;
+                  top: 313px;
+                  letter-spacing: -19.2092px;
+                
+                ">
+              OO
+            </p>
+          </div>
+          <div class="" data-node-id="71:1037" style="
+                position: absolute;
+                align-content: stretch;
+                display: flex;
+                flex-direction: column;
+                font-family:
+                  &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
+                font-weight: 500;
+                gap: 50px;
+                align-items: flex-start;
+                line-height: 1.1;
+                left: calc(66.67% + 30px);
+                font-style: normal;
+                font-size: 24px;
+                top: 40px;
+                letter-spacing: -0.72px;
+              ">
+            <div class="" data-node-id="71:1038" style="
+                  align-content: stretch;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 10px;
+                  align-items: flex-start;
+                  position: relative;
+                  flex-shrink: 0;
+                  width: 171px;
+                ">
+              <p class="" data-node-id="71:1039" style="position: relative; font-size:18px;  width: 100%">
+                ABOUT BLOOM
+              </p>
+              <p class="" data-node-id="71:1040"
+                style="position: relative; flex-shrink: 0; font-size:18px; width: 100%">
+                TEAM
+              </p>
+              <p class="" data-node-id="71:1041"
+                style="position: relative; flex-shrink: 0;  font-size:18px; width: 100%">
+                PRODUCTS
+              </p>
+            </div>
+            <p class="" data-node-id="71:1042"
+              style="position: relative; font-size:18px; flex-shrink: 0; white-space: nowrap">
+              Designed By BLOOM MAKERS
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const globalSections = [
+      document.querySelector('[data-name="1. Product-Hero"]'),
+      document.querySelector('[data-name="2. Product-Problem"]'),
+      document.querySelector('[data-name="3. Product-How it works"]'),
+      document.querySelector('[data-name="4. Product - Key Features"]'),
+      document.querySelector('[data-name="5. Product-Use Case"]'),
+      document.querySelector('[data-name="6. Product-CTA"]'),
+      document.querySelector('[data-name="7. Product-Footer"]')
+    ];
+
+    let activeSectionIndex = 0;
+    let isGlobalTransitioning = false;
+    let globalScrollAccumulator = 0;
+
+    // Typewriter Animation State
+
+
+    let isCurationArrowRevealed = false;
+    let isCurationCardsHidden = false;
+    let isCurationPhase2Revealed = false;
+
+    let isTypewriterFinished = false;
+    let section1EnterDirection = 'down';
+    let typewriterTextData = [
+      "사용자는 기분, 날씨, 계절에 따라 어울리는 제품을 고르고",
+      "싶지만, 기존 비누 탐색은 대부분 향, 패키지, 기능 중심으로",
+      "이루어집니다.",
+      "그래서 “내가 원하는 기분이나 상황에 맞는 비누가 있었으면",
+      "좋겠다\"는 기대가 있어도, 어떤 비누가 나의 무드와 잘 맞는지",
+      "판단하기 어렵습니다."
+    ];
+    let currentP = 0;
+    let currentChar = 0;
+
+    function resetTypewriter() {
+      isTypewriterFinished = false;
+      currentP = 0;
+      currentChar = 0;
+      const container = document.getElementById('typewriter-text-container');
+      if (container) {
+        container.style.opacity = '1';
+        const paragraphs = container.querySelectorAll('.tw-p');
+        paragraphs.forEach(p => p.textContent = "");
+      }
+    }
+
+    function advanceTypewriter() {
+      const container = document.getElementById('typewriter-text-container');
+      const paragraphs = container.querySelectorAll('.tw-p');
+
+      if (currentP >= typewriterTextData.length) {
+        isTypewriterFinished = true;
+        return;
+      }
+
+      let targetText = typewriterTextData[currentP];
+      currentChar += 5; // advance 5 chars
+      if (currentChar > targetText.length) currentChar = targetText.length;
+
+      if (paragraphs[currentP]) {
+        paragraphs[currentP].textContent = targetText.substring(0, currentChar);
+      }
+
+      if (currentChar >= targetText.length) {
+        currentP++;
+        currentChar = 0;
+        if (currentP >= typewriterTextData.length) {
+          isTypewriterFinished = true;
+        }
+      }
+    }
+
+    let lastScale = window.innerWidth / 1920;
+
+    function updateScale() {
+      const canvas = document.getElementById('canvas');
+      const scaler = document.getElementById('scaler');
+      const headerScaler = document.getElementById('header-scaler');
+      const newScale = window.innerWidth / 1920;
+
+      if (lastScale && lastScale !== newScale) {
+        const scrollRatio = window.scrollY / lastScale;
+        window.scrollTo(0, scrollRatio * newScale);
+      }
+      lastScale = newScale;
+
+      canvas.style.transform = `scale(${newScale})`;
+      canvas.style.transformOrigin = "top left";
+      canvas.style.left = "0";
+      scaler.style.height = `${6780 * newScale}px`;
+      if (headerScaler) {
+        headerScaler.style.transform = `scale(${newScale})`;
+        headerScaler.style.left = "0";
+      }
+
+
+    }
+    window.addEventListener('resize', updateScale);
+
+    // Run immediately to set initial scale
+    updateScale();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const hashMatch = window.location.hash.match(/#section(\d+)/);
+      let overrideSectionIndex = null;
+      if (hashMatch) {
+        overrideSectionIndex = parseInt(hashMatch[1], 10);
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+
+      // Restore scroll state or snap to top
+      const savedState = sessionStorage.getItem('bloomProductScrollState');
+
+      setTimeout(() => {
+        const scale = window.innerWidth / 1920;
+
+        if (overrideSectionIndex !== null) {
+          activeSectionIndex = overrideSectionIndex;
+          currentP = 0;
+          isTypewriterFinished = false;
+
+          if (globalSections[activeSectionIndex]) {
+            window.scrollTo(0, globalSections[activeSectionIndex].offsetTop * scale);
+          }
+          updateHeaderTheme();
+          saveScrollState();
+        } else if (savedState) {
+          const state = JSON.parse(savedState);
+          activeSectionIndex = state.activeSectionIndex || 0;
+          if (state.currentP !== undefined) currentP = state.currentP;
+          if (state.isTypewriterFinished !== undefined) isTypewriterFinished = state.isTypewriterFinished;
+
+          if (globalSections[activeSectionIndex]) {
+            window.scrollTo(0, globalSections[activeSectionIndex].offsetTop * scale);
+          }
+          updateHeaderTheme();
+
+          // Immediately render text if returning mid-page
+          if (activeSectionIndex >= 1 && isTypewriterFinished) {
+            currentP = typewriterTextData.length;
+            const container = document.getElementById('typewriter-text-container');
+            if (container) {
+              container.style.opacity = '1';
+              const paragraphs = container.querySelectorAll('.tw-p');
+              paragraphs.forEach((p, i) => { if (typewriterTextData[i]) p.textContent = typewriterTextData[i]; });
+            }
+          }
+        } else {
+          window.scrollTo(0, 0);
+          updateHeaderTheme();
+        }
+
+        triggerSectionAnimations(activeSectionIndex);
+
+        // Handle Entrance Animations
+        const logoContainer = document.getElementById('header-logo-container');
+        const navLinks = document.querySelectorAll('.header-nav-link');
+
+        if (activeSectionIndex === 0) {
+          if (logoContainer) logoContainer.classList.add('reveal-logo');
+
+          setTimeout(() => {
+            navLinks.forEach((link, index) => {
+              setTimeout(() => {
+                link.classList.add('reveal-menu');
+              }, index * 50);
+            });
+          }, 400);
+        } else {
+          if (logoContainer) {
+            logoContainer.style.transition = 'none';
+            logoContainer.classList.add('reveal-logo');
+            setTimeout(() => logoContainer.style.transition = '', 50);
+          }
+          navLinks.forEach(link => {
+            link.style.transition = 'none';
+            link.classList.add('reveal-menu');
+            setTimeout(() => link.style.transition = '', 50);
+          });
+        }
+      }, 50);
+    });
+
+    window.addEventListener('hashchange', () => {
+      const hashMatch = window.location.hash.match(/#section(\d+)/);
+      if (hashMatch) {
+        const overrideSectionIndex = parseInt(hashMatch[1], 10);
+        if (overrideSectionIndex !== activeSectionIndex) {
+          activeSectionIndex = overrideSectionIndex;
+          currentP = 0;
+          isTypewriterFinished = false;
+
+          const scale = window.innerWidth / 1920;
+          if (globalSections[activeSectionIndex]) {
+            const targetY = globalSections[activeSectionIndex].offsetTop * scale;
+            customSmoothScrollTo(targetY, 800);
+          }
+
+          updateHeaderTheme();
+          triggerSectionAnimations(activeSectionIndex);
+          saveScrollState();
+        }
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+    });
+
+    function updateHeaderTheme() {
+      const logoImg = document.getElementById('header-logo-img');
+      const navLinks = document.querySelectorAll('.header-nav-link');
+
+      // Black background sections: 2, 5, 6
+      if (activeSectionIndex === 2 || activeSectionIndex === 5 || activeSectionIndex === 6) {
+        if (logoImg) logoImg.src = 'assets/white_logo.png';
+        navLinks.forEach(link => {
+          link.style.color = '#ffffff';
+        });
+      } else {
+        if (logoImg) logoImg.src = 'assets/8b2a1f19e6af28330d562fc1475d0896e8becd6e.png';
+        navLinks.forEach(link => {
+          link.style.color = '#1e1e1e';
+        });
+      }
+    }
+
+    function customSmoothScrollTo(targetY, duration) {
+      const startY = window.scrollY;
+      const difference = targetY - startY;
+      const startTime = performance.now();
+
+      function step(currentTime) {
+        const elapsed = currentTime - startTime;
+        let progress = elapsed / duration;
+        if (progress > 1) progress = 1;
+
+        const ease = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        window.scrollTo(0, startY + difference * ease);
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function saveScrollState() {
+      sessionStorage.setItem('bloomProductScrollState', JSON.stringify({
+        activeSectionIndex,
+        currentP,
+        isTypewriterFinished
+      }));
+    }
+
+    function handleGlobalScroll(deltaY) {
+      if (isGlobalTransitioning) return;
+      const currentSection = globalSections[activeSectionIndex];
+      if (!currentSection) return;
+
+      if ((deltaY > 0 && globalScrollAccumulator < 0) || (deltaY < 0 && globalScrollAccumulator > 0)) {
+        globalScrollAccumulator = 0;
+      }
+
+      globalScrollAccumulator += deltaY;
+
+      if (globalScrollAccumulator > 0) { // Scroll down
+
+
+
+        // Typewriter intercept
+        if (activeSectionIndex === 1 && !isTypewriterFinished && section1EnterDirection === 'down') {
+          if (globalScrollAccumulator > 30) {
+            advanceTypewriter();
+            globalScrollAccumulator = 0;
+          }
+          return;
+        }
+
+        let threshold = 800;
+
+        if (globalScrollAccumulator > threshold) {
+          if (activeSectionIndex < globalSections.length - 1) {
+            isGlobalTransitioning = true;
+            activeSectionIndex++;
+            updateHeaderTheme();
+            if (activeSectionIndex === 1) section1EnterDirection = 'down';
+
+            const scale = window.innerWidth / 1920;
+            const targetY = globalSections[activeSectionIndex].offsetTop * scale;
+
+            customSmoothScrollTo(targetY, 1200);
+            saveScrollState();
+            triggerSectionAnimations(activeSectionIndex);
+
+            setTimeout(() => {
+              isGlobalTransitioning = false;
+              globalScrollAccumulator = 0;
+            }, 1300);
+          } else {
+            globalScrollAccumulator = threshold;
+          }
+        }
+      } else if (globalScrollAccumulator < 0) { // Scroll up
+        // Typewriter intercept
+        if (activeSectionIndex === 1 && !isTypewriterFinished && section1EnterDirection === 'up') {
+          if (globalScrollAccumulator < -30) {
+            advanceTypewriter();
+            globalScrollAccumulator = 0;
+          }
+          return;
+        }
+
+        let threshold = -800;
+
+        if (globalScrollAccumulator < threshold) {
+          if (activeSectionIndex > 0) {
+            isGlobalTransitioning = true;
+            activeSectionIndex--;
+            updateHeaderTheme();
+            if (activeSectionIndex === 1) section1EnterDirection = 'up';
+
+            const scale = window.innerWidth / 1920;
+            const targetY = globalSections[activeSectionIndex].offsetTop * scale;
+
+            customSmoothScrollTo(targetY, 1200);
+            saveScrollState();
+            triggerSectionAnimations(activeSectionIndex);
+
+            setTimeout(() => {
+              isGlobalTransitioning = false;
+              globalScrollAccumulator = 0;
+            }, 1300);
+          } else {
+            globalScrollAccumulator = threshold;
+          }
+        }
+      }
+    }
+
+    window.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      handleGlobalScroll(e.deltaY);
+    }, { passive: false });
+
+    function triggerSectionAnimations(index) {
+      if (index === 0) {
+        const cardImg = document.querySelector('[data-node-id="71:980"]');
+        if (cardImg) {
+          cardImg.classList.remove('reveal-blur');
+          void cardImg.offsetWidth;
+          cardImg.classList.add('reveal-blur');
+        }
+
+        const heroTitle = document.querySelector('[data-node-id="71:986"]');
+        const heroBody = document.querySelector('[data-node-id="71:991"]');
+        const heroBtn1 = document.querySelector('[data-node-id="71:987"]');
+        const heroBtn2 = document.querySelector('[data-node-id="71:989"]');
+
+        [heroTitle, heroBody, heroBtn1, heroBtn2].forEach(el => {
+          if (el) { el.classList.remove('visible'); void el.offsetWidth; }
+        });
+
+        setTimeout(() => { if (heroTitle) heroTitle.classList.add('visible'); }, 800);
+        setTimeout(() => { if (heroBody) heroBody.classList.add('visible'); }, 1000);
+        setTimeout(() => { if (heroBtn1) heroBtn1.classList.add('visible'); }, 1200);
+        setTimeout(() => { if (heroBtn2) heroBtn2.classList.add('visible'); }, 1300);
+      } else if (index === 1) {
+        // Problem Section Stagger
+        const mainTitle = document.querySelector('[data-node-id="71:945"]');
+        const mainBody = document.querySelector('[data-node-id="79:96"]');
+
+        const photo1 = document.querySelector('[data-node-id="71:929"]');
+        const text1_1 = document.querySelector('[data-node-id="71:936"]');
+        const text1_2 = document.querySelector('[data-node-id="71:934"]');
+        const text1_3 = document.querySelector('[data-node-id="71:935"]');
+
+        const photo2 = document.querySelector('[data-node-id="71:931"]');
+        const text2_1 = document.querySelector('[data-node-id="71:944"]');
+        const text2_2 = document.querySelector('[data-node-id="71:942"]');
+        const text2_3 = document.querySelector('[data-node-id="71:943"]');
+
+        const photo3 = document.querySelector('[data-node-id="71:930"]');
+        const text3_1 = document.querySelector('[data-node-id="71:940"]');
+        const text3_2 = document.querySelector('[data-node-id="71:938"]');
+        const text3_3 = document.querySelector('[data-node-id="71:939"]');
+
+        [mainTitle, photo1, text1_1, text1_2, text1_3, photo2, text2_1, text2_2, text2_3, photo3, text3_1, text3_2, text3_3].forEach(el => {
+          if (el) { el.classList.remove('visible'); void el.offsetWidth; }
+        });
+
+        if (mainTitle) {
+          setTimeout(() => { mainTitle.classList.add('visible'); }, 500);
+        }
+
+        resetTypewriter();
+
+        setTimeout(() => {
+          if (photo1) photo1.classList.add('visible');
+          if (text1_1) text1_1.classList.add('visible');
+          if (text1_2) text1_2.classList.add('visible');
+          if (text1_3) text1_3.classList.add('visible');
+        }, 700);
+
+        setTimeout(() => {
+          if (photo2) photo2.classList.add('visible');
+          if (text2_1) text2_1.classList.add('visible');
+          if (text2_2) text2_2.classList.add('visible');
+          if (text2_3) text2_3.classList.add('visible');
+        }, 900);
+
+        setTimeout(() => {
+          if (photo3) photo3.classList.add('visible');
+          if (text3_1) text3_1.classList.add('visible');
+          if (text3_2) text3_2.classList.add('visible');
+          if (text3_3) text3_3.classList.add('visible');
+        }, 1100);
+      } else if (index === 2) {
+        const s1 = document.querySelector('.step-01');
+        const s2 = document.querySelector('.step-02');
+        const s3 = document.querySelector('.step-03');
+
+        [s1, s2, s3].forEach(el => {
+          if (el) { el.classList.remove('visible'); void el.offsetWidth; }
+        });
+
+        if (s1) setTimeout(() => s1.classList.add('visible'), 500);
+        if (s2) setTimeout(() => s2.classList.add('visible'), 800);
+        if (s3) setTimeout(() => s3.classList.add('visible'), 1100);
+      } else if (index === 3) {
+        const t1 = document.querySelector('.feat-title-1');
+        const t2 = document.querySelector('.feat-title-2');
+        const t3 = document.querySelector('.feat-title-3');
+        const st1 = document.querySelector('.feat-step-1');
+        const st2 = document.querySelector('.feat-step-2');
+        const st3 = document.querySelector('.feat-step-3');
+        const st4 = document.querySelector('.feat-step-4');
+
+        [t1, t2, t3, st1, st2, st3, st4].forEach(el => {
+          if (el) { el.classList.remove('visible'); void el.offsetWidth; }
+        });
+
+        if (t1) setTimeout(() => t1.classList.add('visible'), 500);
+        if (t2) setTimeout(() => t2.classList.add('visible'), 700);
+        if (t3) setTimeout(() => t3.classList.add('visible'), 900);
+
+        if (st1) setTimeout(() => st1.classList.add('visible'), 1200);
+        if (st2) setTimeout(() => st2.classList.add('visible'), 1400);
+        if (st3) setTimeout(() => st3.classList.add('visible'), 1600);
+        if (st4) setTimeout(() => st4.classList.add('visible'), 1800);
+      } else if (index === 4) {
+        // Sequential appearance of texts and question card
+        const t1 = document.getElementById('curation-text-1');
+        const t2 = document.getElementById('curation-text-2');
+        const qc = document.getElementById('curation-question-card');
+
+        [t1, t2, qc].forEach(el => {
+          if (el) { el.classList.remove('visible'); void el.offsetWidth; }
+        });
+
+        setTimeout(() => {
+          if (t1) t1.classList.add('visible');
+        }, 100);
+        setTimeout(() => {
+          if (t2) t2.classList.add('visible');
+        }, 600);
+        setTimeout(() => {
+          if (qc) qc.classList.add('visible');
+        }, 1100);
+      }
+    }
+  </script>
+  <script src="interactions.js"></script>
+  <script src="tilt-card.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let questionLocked = false;
+      let revealedCards = [];
+
+      // 1. Question card buttons logic
+      const questionBtns = document.querySelectorAll('#curation-question-card .curation-btn');
+      const nextBtn = document.getElementById('curation-next-btn');
+
+      questionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (questionLocked) return; // Requirement 3: Lock after next click
+
+          btn.classList.toggle('selected');
+
+          let anySelected = false;
+          questionBtns.forEach(b => {
+            if (b.classList.contains('selected')) anySelected = true;
+          });
+
+          if (nextBtn) {
+            if (anySelected) {
+              nextBtn.classList.add('visible');
+            } else {
+              nextBtn.classList.remove('visible');
+            }
+          }
+        });
+      });
+
+      // 2. Paired cards exclusive selection logic
+      const pairedCards = [
+        document.querySelector('[data-name="step2"]'),
+        document.querySelector('[data-name="step3"]'),
+        document.querySelector('[data-name="Component 7"]')
+      ];
+
+      pairedCards.forEach(card => {
+        if (!card) return;
+        const btnsInCard = card.querySelectorAll('.curation-btn');
+        btnsInCard.forEach(btn => {
+          btn.addEventListener('click', () => {
+            // Exclusive selection (Requirement 1)
+            btnsInCard.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            // Check if all revealed cards have at least one selection (Requirement 2)
+            if (revealedCards.length > 0) {
+              let allSatisfied = true;
+              revealedCards.forEach(rCard => {
+                const rBtns = rCard.querySelectorAll('.curation-btn');
+                let cardHasSelection = false;
+                rBtns.forEach(rb => {
+                  if (rb.classList.contains('selected')) cardHasSelection = true;
+                });
+                if (!cardHasSelection) allSatisfied = false;
+              });
+
+              if (allSatisfied && nextBtn) {
+                // To indicate it's for the final result, we can just show the same next button
+                nextBtn.classList.add('visible');
+                // We'll also change its text to indicate completion
+                nextBtn.innerText = "Show Result";
+              }
+            }
+          });
+        });
+      });
+
+      // 3. Next Button click logic
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          if (!questionLocked) {
+            // First time clicking Next (from Question Card)
+            questionLocked = true; // Lock question buttons
+            nextBtn.classList.remove('visible'); // Hide it
+
+            const b17 = document.querySelector('[data-name="button17"]'); // 기분
+            const b16 = document.querySelector('[data-name="button16"]'); // 날씨
+            const b15 = document.querySelector('[data-name="button15"]'); // 계절
+
+            if (b17 && b17.classList.contains('selected')) revealedCards.push(document.querySelector('[data-name="step2"]'));
+            if (b16 && b16.classList.contains('selected')) revealedCards.push(document.querySelector('[data-name="step3"]'));
+            if (b15 && b15.classList.contains('selected')) revealedCards.push(document.querySelector('[data-name="Component 7"]'));
+
+            revealedCards.forEach((card, i) => {
+              if (card) {
+                setTimeout(() => {
+                  card.classList.add('revealed');
+                }, i * 300); // 300ms gap between reveals
+              }
+            });
+          } else {
+            // Second time clicking Next (Show Result)
+            console.log("Show Result Clicked!");
+
+            // 1. Hide the Next button itself
+            nextBtn.style.opacity = '0';
+            nextBtn.style.pointerEvents = 'none';
+
+            // 2. Slide out the cards
+            const cardsContainer = document.getElementById('curation-cards-container');
+            if (cardsContainer) {
+              cardsContainer.classList.add('slide-out-left');
+            }
+
+            // Wait for animation to finish, then proceed to phase 2
+            setTimeout(() => {
+              console.log("Cards slided out. Ready for phase 2.");
+
+              // Reveal result cards (Group 68, 69, 70 equivalent)
+              const resultContainer = document.getElementById('curation-result-container');
+              if (resultContainer) {
+                resultContainer.style.pointerEvents = 'auto';
+              }
+              const card1 = document.getElementById('curation-result-card-1');
+              const card2 = document.getElementById('curation-result-card-2');
+              const card3 = document.getElementById('curation-result-card-3');
+
+              if (card1) card1.classList.add('reveal-semi-blur-strong');
+              if (card2) setTimeout(() => card2.classList.add('reveal-semi-blur-strong'), 300);
+              if (card3) setTimeout(() => card3.classList.add('reveal-semi-blur-strong'), 600);
+
+              // Reveal phrase slightly earlier to reduce wait time
+              setTimeout(() => {
+                const phraseContainer = document.getElementById('curation-phrase');
+                if (phraseContainer) phraseContainer.style.opacity = '1';
+
+                const phraseLines = document.querySelectorAll('#curation-phrase .phrase-line');
+                if (phraseLines.length > 0) {
+                  phraseLines[0].classList.add('revealed');
+                }
+                if (phraseLines.length > 1) {
+                  setTimeout(() => phraseLines[1].classList.add('revealed'), 600);
+                }
+              }, 2200);
+
+            }, 800);
+          }
+        });
+      }
+    });
+  </script>
+
+
+
+
+
+  <!-- Liquid Blob Cursor Component -->
+  <div id="liquid-blob-wrapper" aria-hidden="true">
+    <div class="blob-container" id="blob-main-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path id="blob-main" fill="var(--blob-color)"></path>
+      </svg></div>
+    <div class="blob-container" id="blob-sat1-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path id="blob-sat1" fill="var(--blob-color)"></path>
+      </svg></div>
+    <div class="blob-container" id="blob-sat2-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path id="blob-sat2" fill="var(--blob-color)"></path>
+      </svg></div>
+  </div>
+  <script src="liquid-blob.js"></script>
+</body>
+
+
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOOM - Team</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        #scaler {
+            width: 100vw;
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+
+        #canvas {
+            width: 1920px;
+            height: 3660px;
+            position: absolute;
+            top: 0;
+            background: white;
+            overflow: hidden;
+        }
+    </style>
+    <link href="interactions.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="liquid-blob.css">
+</head>
+
+<body>
+    <div id="header-scaler"
+        style="position: fixed; top: 0; left: 0; width: 1920px; z-index: 9999; pointer-events: none; transform-origin: top left;">
+        <header
+            style="position: relative; left: 15px; width: 100%; height: 114px; background-color: transparent; pointer-events: auto;">
+            <div id="header-logo-container" class="" data-node-id="71:837" data-name="Group 1 (1) 1"
+                style="position: absolute; height: 74px; left: 40px; top: 20px; width: 135px; cursor: pointer;"
+                onclick="window.navigateTo('index.html', 0);"><img id="header-logo-img" alt="" class=""
+                    src="assets/8b2a1f19e6af28330d562fc1475d0896e8becd6e.png"
+                    style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; max-width: none; object-fit: cover; pointer-events: none; width: 100%; height: 100%; transition: opacity 0.3s ease;" />
+            </div>
+            <p class="header-nav-link" data-node-id="71:735"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1; left: 1280px; font-style: normal; color: #1e1e1e; font-size: 20px; top: 47px; white-space: nowrap; cursor: pointer; transition: color 0.5s ease;"
+                onclick="window.navigateTo('index.html', 1);">
+                ABOUT</p>
+            <p class="header-nav-link" data-node-id="71:736"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1; left: 1435px; font-style: normal; color: #1e1e1e; font-size: 20px; top: 47px; white-space: nowrap; cursor: pointer; transition: color 0.5s ease;"
+                onclick="window.navigateTo('Team.html', 0);">
+                TEAM</p>
+            <p class="header-nav-link" data-node-id="71:737"
+                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; line-height: 1; left: 1590px; font-style: normal; color: #1e1e1e; font-size: 20px; top: 47px; white-space: nowrap; cursor: pointer; transition: color 0.5s ease;"
+                onclick="window.navigateTo('product.html', 0);">PRODUCTS</p>
+        </header>
+    </div>
+    <div id="scaler">
+        <div id="canvas">
+            <div class="" data-node-id="124:60" data-name="Team Page"
+                style="background-color: white; position: relative; width: 100%; height: 100%;">
+                <div class="" data-node-id="124:137" data-name="1. Team-Hero"
+                    style="position: absolute; background-color: white; height: 1080px; left: 0; top: 0; width: 1920px;">
+                    <div class="" data-node-id="124:138" data-name="image 339"
+                        style="position: absolute; height: 1080px; left: 0; top: 0; width: 1920px;"><video
+                            id="hero-video" autoplay loop muted playsinline
+                            src="assets/Water_falling_onto_ocean_surface_202606021854.mp4"
+                            style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; max-width: none; object-fit: cover; pointer-events: none; width: 100%; height: 100%;"></video>
+                        <div class=""
+                            style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: hidden;"></div>
+                    </div>
+                    <div id="bloom-makers-wrapper"
+                        style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;">
+                        <div class="tilt-card-wrapper"
+                            style="position: absolute; left: 66.67%; top: 600px; width: 600px; height: 304px; transform-style: preserve-3d; transition: transform 0.1s ease-out; z-index: 10;">
+                            <div class="" data-node-id="124:192"
+                                style="position: absolute; height: 100%; left: 0; top: 0; width: 100%; transform: translateZ(0px);">
+                                <img alt="" class="" src="assets/514cd8d16423f4bb6f19754386921b27b1f2fe6d.svg"
+                                    style="position: absolute; display: block; top: 0; right: 0; bottom: 0; left: 0; max-width: none; width: 100%; height: 100%;" />
+                            </div>
+                            <p class="" data-node-id="124:198"
+                                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 550; line-height: 1.1; left: 95px; font-style: normal; color: #1e1e1e; font-size: 36px; top: 68px; letter-spacing: -1.08px; white-space: nowrap; transform: translateZ(40px);">
+                                Meet The BLOOM Makers</p>
+                            <div class="" data-node-id="124:199"
+                                style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; line-height: 0; left: 300px; font-style: normal; color: #1e1e1e; font-size: 20px; text-align: center; top: 123px; letter-spacing: -0.6px; white-space: nowrap; transform: translateZ(60px) translateX(-50%);">
+                                <p class="" style="line-height: 1.4; margin-bottom: 0;">BLOOM Makers인 우리는 비누를 단순한 세정 제품이
+                                    아닌,</p>
+                                <p class="" style="line-height: 1.4; margin-bottom: 0;">사용자의 기분과 상황에 어울리는 감각적 경험으로
+                                    바라봅니다.</p>
+                                <p class="" style="line-height: 1.4; margin-bottom: 0;">우리는 향과 색, 계절감, 사용 순간의 스토리를 연결해 손
+                                    씻는</p>
+                                <p class="" style="line-height: 1.4;">시간이 조금 더 나다운 무드로 기억될 수 있는 서비스를 제안합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="" data-node-id="124:142" data-name="2. Team-Introduction"
+                        style="position: absolute; background-color: white; height: 1080px; left: 0; overflow: hidden; top: 1080px; width: 1920px;">
+                        <div id="team-intro-wrapper"
+                            style="position: absolute; top: -50px; left: 0px; width: 100%; height: 100%;">
+                            <div class="" data-node-id="124:143"
+                                style="position: absolute; align-content: stretch; display: flex; flex-direction: column; gap: 80px; align-items: flex-start; line-height: 0; left: calc(50% + 123px); top: 445px; width: 837px;">
+                                <div class="fade-up delay-100" data-node-id="124:144"
+                                    style="display: inline-grid; grid-template-columns: max-content; grid-template-rows: max-content; place-items: start; position: relative; flex-shrink: 0;">
+                                    <div class="" data-node-id="124:145"
+                                        style="grid-column: 1; grid-row: 1; height: 200px; margin-left: 0; margin-top: 0; position: relative; width: 290px;">
+                                        <div aria-hidden class=""
+                                            style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none;">
+                                            <div class=""
+                                                style="position: absolute; background-color: #f5f6fb; top: 0; right: 0; bottom: 0; left: 0;">
+                                            </div>
+                                            <div class=""
+                                                style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: hidden;">
+                                                <img alt="" class=""
+                                                    src="assets/d225f04551825fa5627a0c5098dff2b78fff4438.png"
+                                                    style="position: absolute; height: 118.09%; left: 19.78%; max-width: none; top:  - 0.16%; width: 60.7%;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="" data-node-id="124:146"
+                                        style="grid-column: 1; grid-row: 1; word-break: break-word; font-family: 'Pretendard', sans-serif; margin-left: 310px; margin-top: 105px; font-style: normal; position: relative; color: #1e1e1e; font-size: 14px; letter-spacing: -0.42px; white-space: nowrap;">
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">BLOOM의 브랜드 방향과 큐레이션 흐름을
+                                            기획합니다.</p>
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">사용자가 어떤 기분, 날씨, 게절에 비누를
+                                            사용하고
+                                            싶은지 자연스럽게</p>
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">선택할 수 있도록 질문 구조와 추천 경험을
+                                            설계합니다.</p>
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">단순히 제품을 보여주는 것이 아니라,
+                                            사용자가
+                                            자신의 상황과 연결된</p>
+                                        <p class="" style="line-height: 1.4;">비누를 발견할 수 있는 흐름을 만드는 역할을 맡고 있습니다.</p>
+                                    </div>
+                                    <p class="" data-node-id="124:147"
+                                        style="grid-column: 1; grid-row: 1; word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 600; line-height: 1.4; margin-left: 14px; margin-top: 163px; font-style: normal; position: relative; color: #b6b6b6; font-size: 20px; letter-spacing: -0.6px; text-transform: uppercase; white-space: nowrap;">
+                                        Yeon Suhyeon</p>
+                                    <p class="" data-node-id="124:148"
+                                        style="grid-column: 1; grid-row: 1; word-break: break-word; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 550; line-height: 1.1; margin-left: 310px; margin-top: 0; font-style: normal; position: relative; color: #1e1e1e; font-size: 24px; letter-spacing: -0.72px; text-transform: uppercase; white-space: nowrap;">
+                                        Brand Planner | UX Director<br>Developer</p>
+                                </div>
+                                <div class="fade-up delay-200" data-node-id="124:149"
+                                    style="display: inline-grid; grid-template-columns: max-content; grid-template-rows: max-content; place-items: start; position: relative; flex-shrink: 0;">
+                                    <div class="" data-node-id="124:150"
+                                        style="grid-column: 1; grid-row: 1; height: 200px; margin-left: 0; margin-top: 0; position: relative; width: 290px;">
+                                        <div aria-hidden class=""
+                                            style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none;">
+                                            <div class=""
+                                                style="position: absolute; background-color: #f5f7fc; top: 0; right: 0; bottom: 0; left: 0;">
+                                            </div>
+                                            <div class=""
+                                                style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: hidden;">
+                                                <img alt="" class=""
+                                                    src="assets/36c18e0d53dbb35f676499ddd7f36fe2c2384692.png"
+                                                    style="position: absolute; height: 105.77%; left: 22.75%; max-width: none; top: 7.6%; width: 54.41%;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="" data-node-id="124:151"
+                                        style="grid-column: 1; grid-row: 1; word-break: break-word; font-family: 'Pretendard', sans-serif; font-weight: 600; line-height: 1.4; margin-left: 14px; margin-top: 162px; font-style: normal; position: relative; color: #b6b6b6; font-size: 20px; letter-spacing: -0.6px; text-transform: uppercase; white-space: nowrap;">
+                                        Chu JooHyeon</p>
+                                    <div class="" data-node-id="124:152"
+                                        style="grid-column: 1; grid-row: 1; word-break: break-word; font-family: 'Pretendard', sans-serif; margin-left: 310px; margin-top: 105px; font-style: normal; position: relative; color: #1e1e1e; font-size: 14px; letter-spacing: -0.42px; white-space: nowrap;">
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">BLOOM의 브랜드 이미지를 웹사이트 안에서
+                                            시각화합니다.</p>
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">기분, 날씨, 계절에 따라 달라지는 감각적인
+                                            분위기가 잘 드러나도록</p>
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">전체 레이아웃과 카드 UI의 시각 흐름을
+                                            디자인합니다. 부드러운</p>
+                                        <p class="" style="line-height: 1.4; margin-bottom: 0;">색감과 여백, 정돈된 화면 구성을 통해
+                                            BLOOM의
+                                            단순한 비누 브랜드가</p>
+                                        <p class="" style="line-height: 1.4;">아니라 무드를 제안하는 감각 큐레이션 서비스로 느껴지도록 만듭니다.</p>
+                                    </div>
+                                    <p class="" data-node-id="124:153"
+                                        style="grid-column: 1; grid-row: 1; word-break: break-word; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 550; line-height: 1.1; margin-left: 310px; margin-top: 0; font-style: normal; position: relative; color: #1e1e1e; font-size: 24px; letter-spacing: -0.72px; text-transform: uppercase; white-space: nowrap;">
+                                        Visual Designer | UI Director</p>
+                                </div>
+                            </div>
+                            <p class="fade-up" data-node-id="124:154"
+                                style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 550; line-height: 0.95; left: calc(25% - 440px); font-style: normal; color: #1e1e1e; font-size: 120px; top: 145px; letter-spacing: -8.4px; white-space: nowrap;">
+                                BLOOM MAKERS.</p>
+                        </div>
+                    </div>
+                    <div class="" data-node-id="124:155" data-name="3. Team-Our Mission"
+                        style="position: absolute; background-color: black; height: 1080px; left: 0; overflow: hidden; top: 2160px; width: 1920px;">
+                        <div class="" data-node-id="124:156" data-name="image 337"
+                            style="position: absolute; filter: blur(15px); -webkit-filter: blur(15px); height: 1380px; left: 50%; opacity: 0.3; top: calc(50% + 64px); width: 2070px; transform: translateX(-50%) translateY(-50%);">
+                            <img alt="" class="" src="assets/ee51b8c9d96d7197fc9f1af0fa442e8ce0d0d6c1.png"
+                                style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; max-width: none; object-fit: cover; pointer-events: none; width: 100%; height: 100%;" />
+                        </div>
+                        <p class="" data-node-id="124:157"
+                            style="word-break: break-word; position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600; line-height: 0.95; left: calc(50% - 595px); font-style: normal; color: #f7f7f7; font-size: 120px; top: 80px; letter-spacing: -8.4px; white-space: nowrap;">
+                            MOOD IN EVERY WASH</p>
+                        <div class="" data-node-id="124:158"
+                            style="word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 300; line-height: 0; left: calc(50% - 0.5px); font-style: normal; color: #f7f7f7; font-size: 20px; text-align: center; top: 224px; letter-spacing: -0.6px; width: 1225px; transform: translateX(-50%);">
+                            <p class="" style="line-height: 1.4; margin-bottom: 0;">
+                                우리는 사용자가 비누를 고르는 방식을 바꾸고자 합니다. 향, 성분 중심의 선택을 넘어
+                                기분, 날씨, 계절, 원하는 분위기를 기준으로 비누를 발견하는 경험을 제안합니다.<br>
+                                우리는 BLOOM으로 손 씻는 시간이 단순한 세정 행위에 머무르지 않고,
+                                나의 기분을 가볍게 전환하고 하루의 감각을 완성하는 작은 루틴이 되기를 바랍니다.
+                            </p>
+                        </div>
+                        <div id="mission-content-wrapper"
+                            style="position: absolute; top: -120px; left: 0px; width: 100%; height: 100%;">
+                            <div class="" data-node-id="124:159"
+                                style="position: absolute; display: contents; left: 40px; top: 446px;">
+                                <div class="" data-node-id="124:160"
+                                    style="position: absolute; height: 277px; left: 40px; top: 446px; width: 600px;">
+                                    <img alt="" class="" src="assets/db88c1b05fa06aa22669978a7f287abd1bd8d2bb.svg"
+                                        style="position: absolute; display: block; top: 0; right: 0; bottom: 0; left: 0; max-width: none; width: 100%; height: 100%;" />
+                                </div>
+                                <div class="" data-node-id="124:166"
+                                    style="word-break: break-word; position: absolute; display: contents; left: 138px; font-style: normal; color: #1e1e1e; text-align: center; top: 541px; white-space: nowrap;">
+                                    <p class="" data-node-id="124:167"
+                                        style="position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 500; line-height: 1.1; left: 340px; font-size: 36px; top: 541px; letter-spacing: -1.08px; transform: translateX(-50%);">
+                                        #01. Mood-based Choice</p>
+                                    <p class="" data-node-id="124:168"
+                                        style="position: absolute; font-family: 'Pretendard', sans-serif; line-height: 1.4; left: calc(16.67% + 20px); font-size: 20px; top: calc(50% + 61px); letter-spacing: -0.6px; transform: translateX(-50%);">
+                                        기분과 날씨, 계절에 따라 나만의 무드를 완성합니다.</p>
+                                </div>
+                            </div>
+                            <div class="" data-node-id="124:169"
+                                style="position: absolute; display: contents; left: calc(33.33% + 20px); top: 723px;">
+                                <div class="" data-node-id="124:170"
+                                    style="position: absolute; height: 277px; left: calc(33.33% + 20px); top: 723px; width: 600px;">
+                                    <img alt="" class="" src="assets/db88c1b05fa06aa22669978a7f287abd1bd8d2bb.svg"
+                                        style="position: absolute; display: block; top: 0; right: 0; bottom: 0; left: 0; max-width: none; width: 100%; height: 100%;" />
+                                </div>
+                                <div class="" data-node-id="124:176"
+                                    style="word-break: break-word; position: absolute; display: contents; left: calc(33.33% + 59px); font-style: normal; color: #1e1e1e; text-align: center; top: 818px; white-space: nowrap;">
+                                    <p class="" data-node-id="124:177"
+                                        style="position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 500; line-height: 1.1; left: calc(33.33% + 320px); font-size: 36px; top: 818px; letter-spacing: -1.08px; transform: translateX(-50%);">
+                                        #02. Sensory Product Experience</p>
+                                    <p class="" data-node-id="124:178"
+                                        style="position: absolute; font-family: 'Pretendard', sans-serif; line-height: 1.4; left: 50%; font-size: 20px; top: calc(50% + 338px); letter-spacing: -0.6px; transform: translateX(-50%);">
+                                        향과 색, 이미지, 스토리를 통해 비누를 감각 오브제로 경험하게 합니다.</p>
+                                </div>
+                            </div>
+                            <div class="" data-node-id="124:179"
+                                style="position: absolute; display: contents; left: 66.67%; top: 446px;">
+                                <div class="" data-node-id="124:180"
+                                    style="position: absolute; height: 277px; left: 66.67%; top: 446px; width: 600px;">
+                                    <img alt="" class="" src="assets/db88c1b05fa06aa22669978a7f287abd1bd8d2bb.svg"
+                                        style="position: absolute; display: block; top: 0; right: 0; bottom: 0; left: 0; max-width: none; width: 100%; height: 100%;" />
+                                </div>
+                                <div class="" data-node-id="124:186"
+                                    style="word-break: break-word; position: absolute; display: contents; left: calc(66.67% + 36px); font-style: normal; color: #1e1e1e; text-align: center; top: 541px; white-space: nowrap;">
+                                    <p class="" data-node-id="124:187"
+                                        style="position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 500; line-height: 1.1; left: calc(66.67% + 300.5px); font-size: 36px; top: 541px; letter-spacing: -1.08px; transform: translateX(-50%);">
+                                        #03. Emotional Daily Ritual</p>
+                                    <p class="" data-node-id="124:188"
+                                        style="position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 500; line-height: 1.4; left: calc(83.33% - 20px); font-size: 20px; top: calc(50% + 61px); letter-spacing: -0.6px; transform: translateX(-50%);">
+                                        반복되는 손 씻는 순간을 나의 하루와 연결된 감성적 루틴으로 바꿉니다.</p>
+                                </div>
+                            </div>
+                            <div class=""
+                                style="position: absolute; display: flex; height: 196.648px; align-items: center; justify-content: center; left: calc(58.33% + 10px); top: 601.1px; width: 109.5px;">
+                                <div class="flex-none" style="transform: rotate(15deg) scaleY(-1);">
+                                    <div class="" data-node-id="124:189"
+                                        style="height: 186.607px; position: relative; width: 63.361px;">
+                                        <div class="" style="position: absolute; inset: -1.46% 0 -2.02% -3.16%;"><img
+                                                alt="" class=""
+                                                src="assets/f01ab6b150126b7a9df81fb72ebae07b1e17aa20.svg"
+                                                style="display: block; max-width: none; width: 100%; height: 100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=""
+                                style="position: absolute; display: flex; height: 196.648px; align-items: center; justify-content: center; left: calc(25% + 30px); top: 661px; width: 109.5px;">
+                                <div class="flex-none" style="transform: rotate(-15deg);">
+                                    <div class="" data-node-id="124:190"
+                                        style="height: 186.607px; position: relative; width: 63.361px;">
+                                        <div class="" style="position: absolute; inset: -1.46% 0 -2.02% -3.16%;"><img
+                                                alt="" class=""
+                                                src="assets/45f063466669baa91e9ff1a4c8518590c83181fd.svg"
+                                                style="display: block; max-width: none; width: 100%; height: 100%;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="" data-node-id="124:200" data-name="4. Team-Footer"
+                        style="word-break: break-word; position: absolute; background-color: #1e1e1e; height: 420px; left: 0; overflow: hidden; color: #f7f7f7; top: 3240px; width: 1920px;">
+                        <div class="" data-node-id="124:201"
+                            style="position: absolute; display: contents; left: 40px; top: 313px; white-space: nowrap;">
+                            <p class="" data-node-id="124:202"
+                                style="position: absolute; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 400; line-height: 1.1; left: 111px; font-style: normal; font-size: 18px; top: 326px; letter-spacing: -0.72px;">
+                                BLOOM A Mood-Based Soap Curation Service.</p>
+                            <p class="" data-node-id="124:203"
+                                style="position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 1.4; left: calc(20.83% - 289px); font-style: normal; font-size: 18px; top: calc(50% + 142px); letter-spacing: -0.6px;">
+                                기분, 날씨, 계절에 맞춰 나에게 어울리는 향과 색의 비누를 제안합니다.</p>
+                            <p class="" data-node-id="124:204"
+                                style="position: absolute; font-family: 'Playfair Display', serif; font-style: italic; font-weight: normal; font-style: italic; line-height: 1.5; left: 40px; font-size: 48.023px; top: 313px; letter-spacing: -19.2092px;">
+                                OO</p>
+                        </div>
+                        <div class="" data-node-id="124:205"
+                            style="position: absolute; align-content: stretch; display: flex; flex-direction: column; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 500; gap: 50px; align-items: flex-start; line-height: 1.1; left: calc(66.67% + 30px); font-style: normal; font-size: 18px; top: 40px; letter-spacing: -0.72px;">
+                            <div class="" data-node-id="124:206"
+                                style="align-content: stretch; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; position: relative; flex-shrink: 0; width: 171px;">
+                                <p class="" data-node-id="124:207"
+                                    style="position: relative; flex-shrink: 0; width: 100%; cursor: pointer;"
+                                    onclick="window.location.href=\'index.html\';">ABOUT BLOOM</p>
+                                <p class="" data-node-id="124:208"
+                                    style="position: relative; flex-shrink: 0; width: 100%; cursor: pointer;"
+                                    onclick="window.location.href=\'Team.html\';">TEAM</p>
+                                <p class="" data-node-id="124:209"
+                                    style="position: relative; flex-shrink: 0; width: 100%; cursor: pointer;"
+                                    onclick="window.location.href=\'product.html\';">PRODUCTS</p>
+                            </div>
+                            <p class="" data-node-id="124:210"
+                                style="position: relative; flex-shrink: 0; white-space: nowrap;">Designed By BLOOM
+                                MAKERS</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const globalSections = [
+            document.querySelector('[data-name="1. Team-Hero"]'),
+            document.querySelector('[data-name="2. Team-Introduction"]'),
+            document.querySelector('[data-name="3. Team-Our Mission"]'),
+            document.querySelector('[data-name="4. Team-Footer"]')
+        ];
+
+        let activeSectionIndex = 0;
+        let isGlobalTransitioning = false;
+        let globalScrollAccumulator = 0;
+
+        let lastScale = window.innerWidth / 1920;
+
+        function updateScale() {
+            const canvas = document.getElementById('canvas');
+            const scaler = document.getElementById('scaler');
+            const headerScaler = document.getElementById('header-scaler');
+            const newScale = window.innerWidth / 1920;
+
+            if (lastScale && lastScale !== newScale) {
+                const scrollRatio = window.scrollY / lastScale;
+                window.scrollTo(0, scrollRatio * newScale);
+            }
+            lastScale = newScale;
+
+            canvas.style.transform = `scale(${newScale})`;
+            canvas.style.transformOrigin = "top left";
+            canvas.style.left = "0";
+            scaler.style.height = `${3660 * newScale}px`;
+            if (headerScaler) {
+                headerScaler.style.transform = `scale(${newScale})`;
+                headerScaler.style.left = "0";
+            }
+
+
+        }
+        window.addEventListener('resize', updateScale);
+
+        // Run immediately to set initial scale
+        updateScale();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const hashMatch = window.location.hash.match(/#section(\d+)/);
+            let overrideSectionIndex = null;
+            if (hashMatch) {
+                overrideSectionIndex = parseInt(hashMatch[1], 10);
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
+
+            // Restore scroll state or snap to top
+            const savedState = sessionStorage.getItem('bloomTeamScrollState');
+
+            setTimeout(() => {
+                const scale = window.innerWidth / 1920;
+
+                if (overrideSectionIndex !== null) {
+                    activeSectionIndex = overrideSectionIndex;
+                    if (globalSections[activeSectionIndex]) {
+                        window.scrollTo(0, globalSections[activeSectionIndex].offsetTop * scale);
+                    }
+                    updateHeaderTheme();
+                    saveScrollState();
+                } else if (savedState) {
+                    const state = JSON.parse(savedState);
+                    activeSectionIndex = state.activeSectionIndex || 0;
+                    if (globalSections[activeSectionIndex]) {
+                        window.scrollTo(0, globalSections[activeSectionIndex].offsetTop * scale);
+                    }
+                    updateHeaderTheme();
+                } else {
+                    window.scrollTo(0, 0);
+                    updateHeaderTheme();
+                }
+
+                // Handle Entrance Animations
+                const logoContainer = document.getElementById('header-logo-container');
+                const navLinks = document.querySelectorAll('.header-nav-link');
+
+                if (activeSectionIndex === 0) {
+                    if (logoContainer) logoContainer.classList.add('reveal-logo');
+
+                    // When Logo is ~50% opacity (0.4s into 0.8s animation), reveal menus with stagger
+                    setTimeout(() => {
+                        navLinks.forEach((link, index) => {
+                            setTimeout(() => {
+                                link.classList.add('reveal-menu');
+                            }, index * 50);
+                        });
+                    }, 400);
+                } else {
+                    // Instantly reveal header elements without animation if loaded mid-page
+                    if (logoContainer) {
+                        logoContainer.style.transition = 'none';
+                        logoContainer.classList.add('reveal-logo');
+                        setTimeout(() => logoContainer.style.transition = '', 50);
+                    }
+                    navLinks.forEach(link => {
+                        link.style.transition = 'none';
+                        link.classList.add('reveal-menu');
+                        setTimeout(() => link.style.transition = '', 50);
+                    });
+                }
+            }, 50);
+        });
+
+        window.addEventListener('hashchange', () => {
+            const hashMatch = window.location.hash.match(/#section(\d+)/);
+            if (hashMatch) {
+                const overrideSectionIndex = parseInt(hashMatch[1], 10);
+                if (overrideSectionIndex !== activeSectionIndex) {
+                    activeSectionIndex = overrideSectionIndex;
+
+                    const scale = window.innerWidth / 1920;
+                    if (globalSections[activeSectionIndex]) {
+                        const targetY = globalSections[activeSectionIndex].offsetTop * scale;
+                        customSmoothScrollTo(targetY, 800);
+                    }
+
+                    updateHeaderTheme();
+                    saveScrollState();
+                }
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
+        });
+
+        function updateHeaderTheme() {
+            const logoImg = document.getElementById('header-logo-img');
+            const navLinks = document.querySelectorAll('.header-nav-link');
+
+            // Sections 2 (Mission) and 3 (Footer) are black backgrounds
+            if (activeSectionIndex >= 2) {
+                if (logoImg) logoImg.src = 'assets/white_logo.png';
+                navLinks.forEach(link => {
+                    link.style.color = '#ffffff';
+                });
+            } else {
+                if (logoImg) logoImg.src = 'assets/8b2a1f19e6af28330d562fc1475d0896e8becd6e.png';
+                navLinks.forEach(link => {
+                    link.style.color = '#1e1e1e';
+                });
+            }
+        }
+
+        function customSmoothScrollTo(targetY, duration) {
+            const startY = window.scrollY;
+            const difference = targetY - startY;
+            const startTime = performance.now();
+
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                let progress = elapsed / duration;
+                if (progress > 1) progress = 1;
+
+                const ease = progress < 0.5
+                    ? 4 * progress * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+                window.scrollTo(0, startY + difference * ease);
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function saveScrollState() {
+            sessionStorage.setItem('bloomTeamScrollState', JSON.stringify({
+                activeSectionIndex
+            }));
+        }
+
+        function handleGlobalScroll(deltaY) {
+            if (isGlobalTransitioning) return;
+            const currentSection = globalSections[activeSectionIndex];
+            if (!currentSection) return;
+
+            // 스크롤 방향이 바뀌면 누적된 게이지 초기화
+            if ((deltaY > 0 && globalScrollAccumulator < 0) || (deltaY < 0 && globalScrollAccumulator > 0)) {
+                globalScrollAccumulator = 0;
+            }
+
+            globalScrollAccumulator += deltaY;
+
+            if (globalScrollAccumulator > 0) { // 아래로 스크롤
+                let threshold = 800; // 섹션 간 기본 이동 요구치
+
+                if (globalScrollAccumulator > threshold) {
+                    if (activeSectionIndex < globalSections.length - 1) {
+                        isGlobalTransitioning = true;
+                        activeSectionIndex++;
+                        updateHeaderTheme();
+
+                        const scale = window.innerWidth / 1920;
+                        const targetY = globalSections[activeSectionIndex].offsetTop * scale;
+
+                        customSmoothScrollTo(targetY, 1200);
+                        saveScrollState();
+
+                        setTimeout(() => {
+                            isGlobalTransitioning = false;
+                            globalScrollAccumulator = 0;
+                        }, 1300);
+                    } else {
+                        globalScrollAccumulator = threshold; // 마지막 섹션에서 고정
+                    }
+                }
+            } else if (globalScrollAccumulator < 0) { // 위로 스크롤
+                let threshold = -800;
+
+                if (globalScrollAccumulator < threshold) {
+                    if (activeSectionIndex > 0) {
+                        isGlobalTransitioning = true;
+                        activeSectionIndex--;
+                        updateHeaderTheme();
+
+                        const scale = window.innerWidth / 1920;
+                        const targetY = globalSections[activeSectionIndex].offsetTop * scale;
+
+                        customSmoothScrollTo(targetY, 1200);
+                        saveScrollState();
+
+                        setTimeout(() => {
+                            isGlobalTransitioning = false;
+                            globalScrollAccumulator = 0;
+                        }, 1300);
+                    } else {
+                        globalScrollAccumulator = threshold; // 첫 섹션에서 고정
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            handleGlobalScroll(e.deltaY);
+        }, { passive: false });
+    </script>
+    <script src="interactions.js"></script>
+    <script src="tilt-card.js"></script>
+    <script>
+        // Ripple / Distortion on Hover Web Effect
+        // The cursor leaves a wake of expanding wavefronts — water under your fingertip.
+        (function initRippleEffect() {
+            const video = document.getElementById('hero-video');
+            const container = document.querySelector('[data-name="1. Team-Hero"]');
+
+            if (!video || !container) return;
+
+            const config = {
+                speed: 0.55,
+                freq: 32.0,
+                amp: 0.05,
+                life: 2.8
+            };
+
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '5';
+            container.appendChild(canvas);
+
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+            const scene = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+            video.style.opacity = '0';
+            video.play().catch(e => console.log('Video play error:', e));
+            const texture = new THREE.VideoTexture(video);
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+
+            const maxRipples = 20;
+            const ripples = [];
+            for (let i = 0; i < maxRipples; i++) {
+                ripples.push(new THREE.Vector3(0, 0, 0));
+            }
+
+            const vertexShader = `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = vec4(position, 1.0);
+                }
+            `;
+
+            const fragmentShader = `
+                uniform sampler2D uTexture;
+                uniform vec2 uResolution;
+                uniform int uCount;
+                uniform vec3 uRipples[${maxRipples}];
+                uniform float uSpeed;
+                uniform float uFreq;
+                uniform float uAmp;
+                uniform float uLife;
+
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 uv = vUv;
+                    vec2 offset = vec2(0.0);
+                    float aspect = uResolution.x / uResolution.y;
+
+                    for(int i = 0; i < ${maxRipples}; i++) {
+                        if(i >= uCount) break;
+                        
+                        vec2 center = uRipples[i].xy;
+                        float age = uRipples[i].z;
+                        
+                        vec2 p = uv - center;
+                        p.x *= aspect;
+                        
+                        float dist = length(p);
+                        float radius = age * uSpeed;
+                        float distToRing = dist - radius;
+                        
+                        float phase = distToRing * uFreq;
+                        float decay = max(0.0, 1.0 - (age / uLife));
+                        
+                        if(phase < 0.0) {
+                            float wave = sin(phase) * decay; 
+                            vec2 dir = normalize(p);
+                            offset += dir * wave * uAmp * exp(distToRing * 20.0);
+                        }
+                    }
+                    
+                    gl_FragColor = texture2D(uTexture, uv + offset);
+                }
+            `;
+
+            const uniforms = {
+                uTexture: { value: texture },
+                uResolution: { value: new THREE.Vector2(1920, 1080) },
+                uCount: { value: 0 },
+                uRipples: { value: ripples },
+                uSpeed: { value: config.speed },
+                uFreq: { value: config.freq },
+                uAmp: { value: config.amp },
+                uLife: { value: config.life }
+            };
+
+            const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms });
+            const geometry = new THREE.PlaneGeometry(2, 2);
+            scene.add(new THREE.Mesh(geometry, material));
+
+            renderer.setSize(1920, 1080);
+
+            let lastMouseTime = 0;
+            let activeRipples = [];
+
+            window.addEventListener('mousemove', (e) => {
+                const now = performance.now();
+                if (now - lastMouseTime > 50) {
+                    lastMouseTime = now;
+                    const rect = canvas.getBoundingClientRect();
+                    const uvX = (e.clientX - rect.left) / rect.width;
+                    const uvY = 1.0 - ((e.clientY - rect.top) / rect.height);
+
+                    if (uvX >= 0 && uvX <= 1 && uvY >= 0 && uvY <= 1) {
+                        activeRipples.push({ x: uvX, y: uvY, age: 0 });
+                        if (activeRipples.length > maxRipples) activeRipples.shift();
+                    }
+                }
+            });
+
+            const clock = new THREE.Clock();
+            function animate() {
+                requestAnimationFrame(animate);
+
+                const rect = canvas.getBoundingClientRect();
+                if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+                const dt = clock.getDelta();
+                for (let i = activeRipples.length - 1; i >= 0; i--) {
+                    activeRipples[i].age += dt;
+                    if (activeRipples[i].age >= config.life) activeRipples.splice(i, 1);
+                }
+
+                uniforms.uCount.value = activeRipples.length;
+                for (let i = 0; i < activeRipples.length; i++) {
+                    ripples[i].set(activeRipples[i].x, activeRipples[i].y, activeRipples[i].age);
+                }
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        })();
+    </script>
+
+
+    <!-- Liquid Blob Cursor Component -->
+    <div id="liquid-blob-wrapper" aria-hidden="true">
+        <div class="blob-container" id="blob-main-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path id="blob-main" fill="var(--blob-color)"></path></svg></div>
+        <div class="blob-container" id="blob-sat1-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path id="blob-sat1" fill="var(--blob-color)"></path></svg></div>
+        <div class="blob-container" id="blob-sat2-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path id="blob-sat2" fill="var(--blob-color)"></path></svg></div>
+    </div>
+    <script src="liquid-blob.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,204 @@
+/* style.css - Exact Figma Match for BLOOM */
+
+:root {
+    --font-heading: 'Helvetica Neue', 'Helvetica Neue LT Pro', Helvetica, Arial, sans-serif;
+    --font-body: 'Pretendard', sans-serif;
+    --font-logo: 'Playfair Display', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: #ffffff;
+    color: #1e1e1e;
+    overflow-x: hidden;
+    margin: 0;
+    scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
+
+#main-container {
+    width: 100vw;
+    /* Height will be driven by the scale-wrapper's scaled height */
+    overflow-x: hidden;
+}
+
+#scale-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    transform-origin: top left;
+}
+
+/* Base positioning for all exact layouts */
+.section, .how-step {
+    position: absolute;
+    width: 1920px;
+    left: 0;
+}
+
+.bg-white { background-color: #ffffff; }
+.bg-black { background-color: #000000; color: #f7f7f7; }
+
+/* Text Utils */
+.font-heading { font-family: var(--font-heading); font-weight: 500; }
+.font-body { font-family: var(--font-body); font-weight: 600; }
+.text-20 { font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; }
+.text-24 { font-size: 24px; line-height: 1.1; letter-spacing: -0.72px; }
+.text-36 { font-size: 36px; line-height: 1.1; letter-spacing: -1.08px; }
+.text-64 { font-size: 64px; line-height: 1.1; letter-spacing: -1.92px; }
+.text-120 { font-size: 120px; line-height: 1.1; letter-spacing: -8.4px; }
+
+/* Global components */
+.btn {
+    border: 1px solid #1e1e1e;
+    border-radius: 500px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    letter-spacing: -0.6px;
+    line-height: 1;
+}
+
+/* 1. Hero (0 - 1080) */
+#hero { top: 0; height: 1080px; }
+.hero-bg { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; pointer-events: none; }
+.bg-img-hero { position: absolute; left: 0; top: -20.85%; width: 100%; height: 133.28%; }
+.hero-group13 { position: absolute; left: 1280px; top: 600px; width: 600px; height: 440px; }
+.hero-nav-item { position: absolute; font-family: var(--font-heading); font-weight: bold; font-size: 20px; top: 47px; }
+.hero-nav-about { left: 1280px; }
+.hero-nav-team { left: 1435px; }
+.hero-nav-products { left: 1590px; }
+.hero-main-text { position: absolute; left: 1342px; top: 680px; }
+.hero-main-text p { font-family: var(--font-heading); font-size: 36px; line-height: 1.1; letter-spacing: -1.08px; }
+.hero-btn-find { position: absolute; left: 1342px; top: 920px; }
+.hero-btn-about { position: absolute; left: 1532px; top: 920px; }
+.hero-logo { position: absolute; left: 40px; top: 20px; width: 135px; height: 74px; }
+.hero-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 2. Problem (1080 - 2160) */
+#problem { top: 1080px; height: 1080px; overflow: hidden; }
+.problem-bg { position: absolute; left: 0; top: -200px; width: 1920px; height: 1280px; opacity: 0.35; background-image: url('assets/image331.png'); background-size: cover; pointer-events: none; }
+.problem-intro { position: absolute; left: 50%; top: calc(50% - 328px); transform: translateX(-50%); text-align: center; font-family: var(--font-body); font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; font-weight: 600; white-space: nowrap; }
+.problem-huge-title { position: absolute; left: calc(54.17% - 523px); top: calc(50% - 460px); font-family: var(--font-heading); font-size: 120px; letter-spacing: -8.4px; white-space: nowrap; }
+.problem-img-1 { position: absolute; left: 40px; top: 478px; width: 290px; height: 400px; }
+.problem-img-1 img { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+.problem-img-2 { position: absolute; left: calc(41.67% + 10px); top: 478px; width: 295px; height: 400px; }
+.problem-img-2 img { width: 100%; height: 100%; object-fit: cover; }
+.problem-img-3 { position: absolute; left: calc(83.33% - 10px); top: 478px; width: 290px; height: 400px; }
+.problem-img-3 img { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+.problem-desc { position: absolute; top: calc(50% + 376px); font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; white-space: nowrap; }
+.problem-desc-1 { left: calc(12.5% - 200px); }
+.problem-desc-2 { left: calc(45.83% - 65px); }
+.problem-desc-3 { left: calc(87.5% - 90px); }
+.problem-subtitle { position: absolute; top: calc(50% + 348px); font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; text-transform: uppercase; white-space: nowrap; }
+.problem-subtitle-1 { left: calc(4.17% - 40px); }
+.problem-subtitle-2 { left: calc(45.83% - 65px); }
+.problem-subtitle-3 { left: calc(87.5% - 90px); }
+
+/* 3. Solution (2160 - 3240) */
+#solution { top: 2160px; height: 1080px; overflow: hidden; }
+.solution-svg { position: absolute; left: calc(33.33% + 20px); top: 334px; width: 600px; height: 412px; }
+.solution-svg img { width: 100%; height: 100%; }
+.solution-main-text { position: absolute; left: calc(33.33% + 320px); top: 414px; width: 560px; text-align: center; transform: translateX(-50%); font-family: var(--font-body); font-size: 36px; line-height: 1.1; font-weight: 600; letter-spacing: -1.08px; text-transform: uppercase; }
+.solution-sub-text { position: absolute; left: 50%; top: calc(50% + 14px); transform: translateX(-50%); text-align: center; font-family: var(--font-body); font-size: 20px; line-height: 1.4; font-weight: 600; letter-spacing: -0.6px; white-space: nowrap; }
+
+/* 4. Key Features (3240 - 4320) */
+#features { top: 3240px; height: 1080px; overflow: hidden; }
+.features-huge-title { position: absolute; font-family: var(--font-heading); font-size: 120px; line-height: 1.1; letter-spacing: -8.4px; white-space: nowrap; }
+.features-huge-title-1 { left: calc(20.83% - 360px); top: calc(50% - 460px); }
+.features-huge-title-2 { left: calc(25% - 440px); top: calc(50% - 349px); }
+.features-line { position: absolute; height: 0; }
+.features-line img { width: 100%; height: 2px; }
+.features-line-1 { left: 40px; top: 338px; width: 1840px; }
+.features-line-2 { left: calc(50% + 10px); top: 449px; width: 910px; }
+.features-line-3 { left: calc(50% + 10px); top: 588px; width: 910px; }
+.features-img { position: absolute; left: calc(50% + 10px); top: 792px; width: 910px; height: 208px; }
+.features-img img { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+.features-sub { position: absolute; left: calc(54.17% - 70px); font-family: var(--font-body); font-size: 20px; font-weight: 600; line-height: 1.4; letter-spacing: -0.6px; white-space: nowrap; }
+.features-sub-1 { top: calc(50% - 187px); }
+.features-sub-2 { top: calc(50% - 76px); }
+.features-sub-3 { top: calc(50% + 63px); }
+.features-desc { position: absolute; font-family: var(--font-body); font-size: 20px; font-weight: 600; line-height: 1.4; letter-spacing: -0.6px; white-space: nowrap; }
+.features-desc-1 { left: calc(79.17% - 240px); top: calc(50% - 187px); }
+.features-desc-2 { left: calc(83.33% - 320px); top: calc(50% - 76px); }
+.features-desc-3 { left: calc(83.33% - 320px); top: calc(50% + 63px); }
+
+/* 5. How It Works (Scroll Jacking Container: 4320 - 5400 visually, but physically taller) */
+#howitworks-container {
+    position: absolute;
+    top: 4320px;
+    left: 0;
+    width: 1920px;
+    height: 3000px; /* Gives enough scroll room for 3 steps */
+}
+#howitworks-track {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+}
+
+.how-step {
+    height: 1080px;
+    overflow: hidden;
+    transition: transform 0.1s ease-out;
+}
+
+/* Base text elements for steps */
+.step-huge-title { position: absolute; left: calc(50% + 40px); top: 80px; font-family: var(--font-heading); font-size: 36px; line-height: 1.1; letter-spacing: -1.08px; white-space: nowrap; }
+.step-sub-title { position: absolute; left: calc(50% + 40px); top: 130px; font-family: var(--font-heading); font-size: 24px; line-height: 1.1; letter-spacing: -0.72px; white-space: nowrap; }
+.step-number { position: absolute; left: calc(50% + 40px); top: 503px; font-family: var(--font-heading); font-size: 64px; line-height: 1.1; letter-spacing: -1.92px; white-space: nowrap; }
+
+#step1 { top: 0; left: 0; }
+.step-bg-gray { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; background-color: #c4c4c4; }
+#step1 .step-desc { position: absolute; left: calc(87.5% - 112px); top: calc(50% + 43px); width: 231px; font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; }
+.step-img-1 { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; pointer-events: none; }
+.step-img-1 img { width: 100%; height: 100%; object-fit: cover; }
+
+#step2 { top: 0; left: 1920px; }
+#step2 .step-desc { position: absolute; left: calc(87.5% - 138px); top: calc(50% + 43px); font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; white-space: nowrap; }
+
+#step3 { top: 0; left: 3840px; }
+#step3 .step-desc { position: absolute; left: calc(79.17% - 116px); top: calc(50% + 43px); font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; white-space: nowrap; }
+.step-img-3a { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; }
+.step-img-3a img { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+.step-img-3b { position: absolute; left: 260px; top: -96px; width: 941px; height: 1176px; pointer-events: none; }
+.step-img-3b img { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+
+/* 6. CTA (Top was 5400 but since #howitworks-container is 3000px, 4320+3000 = 7320) */
+/* Wait! For visual placement relative to #scale-wrapper, we just place it physically below the container. */
+#cta { top: 7320px; height: 1080px; overflow: hidden; }
+.cta-huge-title { position: absolute; left: calc(79.17% - 79.5px); top: 232px; font-family: var(--font-heading); font-size: 120px; line-height: 1.1; letter-spacing: -8.4px; white-space: nowrap; transform: translateX(-50%); }
+.cta-title-1 { position: absolute; left: calc(66.67% - 290px); top: 0; }
+.cta-title-2 { position: absolute; left: calc(87.5% - 374px); top: 112px; }
+.cta-title-3 { position: absolute; left: calc(79.17% - 214px); top: 224px; }
+.cta-desc { position: absolute; left: calc(79.17% + 18px); top: 628px; width: 456px; font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; transform: translateX(-50%); }
+.cta-buttons { position: absolute; left: calc(79.17% + 18px); top: 820px; display: flex; gap: 10px; transform: translateX(-50%); }
+.cta-mask-group { position: absolute; left: 40px; top: 371px; }
+.cta-mask-bg { position: absolute; left: -209px; top: -26px; width: 1159px; height: 1448px; background-color: #c4c4c4; -webkit-mask-image: url('assets/image362.svg'); -webkit-mask-size: 950px 477px; -webkit-mask-position: 249px 397px; -webkit-mask-repeat: no-repeat; }
+.cta-mask-img { position: absolute; left: 44px; top: -381px; width: 941px; height: 1672px; -webkit-mask-image: url('assets/image362.svg'); -webkit-mask-size: 950px 477px; -webkit-mask-position: -4px 752px; -webkit-mask-repeat: no-repeat; }
+.cta-mask-img img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+/* 7. Footer (top 8400, height 420) */
+#footer { top: 8400px; height: 420px; overflow: hidden; }
+.footer-logo { position: absolute; left: 40px; top: 313px; font-family: var(--font-logo); font-style: italic; font-weight: normal; font-size: 48px; line-height: 1.5; letter-spacing: -19.2px; }
+.footer-slogan { position: absolute; left: 111px; top: 326px; font-family: var(--font-heading); font-size: 24px; line-height: 1.1; letter-spacing: -0.72px; white-space: nowrap; }
+.footer-desc { position: absolute; left: calc(20.83% - 289px); top: calc(50% + 142px); font-family: var(--font-body); font-weight: 600; font-size: 20px; line-height: 1.4; letter-spacing: -0.6px; white-space: nowrap; }
+.footer-nav { position: absolute; left: calc(66.67% + 30px); top: 40px; font-family: var(--font-heading); font-size: 24px; line-height: 1.1; letter-spacing: -0.72px; display: flex; flex-direction: column; gap: 10px; width: 171px; }
+.footer-credit { position: absolute; left: calc(66.67% + 30px); top: 250px; font-family: var(--font-heading); font-size: 24px; line-height: 1.1; letter-spacing: -0.72px; white-space: nowrap; }
