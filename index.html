@@ -1002,6 +1002,11 @@
                     updateSteps();
                     updateKeyFeatures();
                 } catch (e) { }
+            } else {
+                updateHeaderTheme();
+                triggerSectionAnimations(activeSectionIndex);
+                updateSteps();
+                updateKeyFeatures();
             }
 
             setTimeout(() => {
