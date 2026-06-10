@@ -205,6 +205,266 @@
 </head>
 
 <body>
+    <style>
+        @keyframes loadingWave {
+            0%, 100% { transform: scale(1) translateY(0); color: #888; }
+            50% { transform: scale(1.15) translateY(-1px); color: #000; }
+        }
+        .loading-letter {
+            display: inline-block;
+            animation: loadingWave 1.4s infinite ease-in-out;
+            transform-origin: center bottom;
+        }
+    </style>
+    <!-- Splash Screen (Progress Fill) -->
+    <!-- Core idea: A full-screen overlay that hides the site on initial load. A horizontal bar scales its width from 0% to 100% using CSS transitions (Progress Fill effect) over a set duration. Once filled, the overlay fades out, revealing the website beneath. -->
+    <div id="splash-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #fff; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease-out, visibility 0.6s ease-out;">
+        <canvas id="splash-shader-canvas" style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;"></canvas>
+        <img src="assets/loading-logo.png" alt="BLOOM" style="width: 140px; margin-bottom: 20px; z-index: 1;">
+        
+        <div id="loading-text-container" style="font-family: 'Pretendard', sans-serif; font-size: 16px; font-weight: 500; color: #000; margin-bottom: 30px; letter-spacing: 0.5px;">
+            <!-- JS will inject animated letters here -->
+        </div>
+
+        <div style="width: 300px; height: 4px; background-color: rgba(0,0,0,0.2); border-radius: 2px; overflow: hidden; position: relative;">
+            <div id="splash-progress-bar" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background-color: #000; transition: width 2.2s cubic-bezier(0.25, 1, 0.5, 1);"></div>
+        </div>
+        
+        <div id="splash-percent" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 500; color: #000; margin-top: 10px; letter-spacing: 1px;">0%</div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const splash = document.getElementById('splash-screen');
+            const progressBar = document.getElementById('splash-progress-bar');
+            const textContainer = document.getElementById('loading-text-container');
+            const percentEl = document.getElementById('splash-percent');
+            
+            // Check prefers-reduced-motion
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const duration = prefersReducedMotion ? 0 : 2200; // ms
+
+            // Raymarched SDF Blob Shader Setup
+            const shaderCanvas = document.getElementById('splash-shader-canvas');
+            let animId;
+            let renderer;
+            if (shaderCanvas && typeof THREE !== 'undefined' && !prefersReducedMotion) {
+                renderer = new THREE.WebGLRenderer({ canvas: shaderCanvas, alpha: true });
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.2));
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                
+                const scene = new THREE.Scene();
+                const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+                
+                const uniforms = {
+                    iTime: { value: 0 },
+                    iResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                    iMouse: { value: new THREE.Vector2() },
+                    uSpeed: { value: 0.7 },
+                    uSmooth: { value: 0.35 },
+                    uCam: { value: 2.4 },
+                    uLight: { value: 1.2 },
+                    uOffsetX: { value: 0.65 },
+                    uOffsetY: { value: 0.0 },
+                    uAlpha: { value: 1.0 },
+                    uFresnelPower: { value: 4.0 },
+                    uFresnelIntensity: { value: 0.4 }
+                };
+                
+                const fragmentShader = `
+// --- Key Mathematical Step (smin) ---
+// Polynomial smooth min function by Inigo Quilez.
+// Blends two Signed Distance Fields (SDFs) together using a smooth transition 'k'.
+float smin( float a, float b, float k ) {
+    float h = clamp( 0.5 + 0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+
+float sdSphere( vec3 p, float s ) {
+  return length(p) - s;
+}
+
+uniform float iTime;
+uniform vec2 iResolution;
+uniform vec2 iMouse;
+uniform float uSpeed;
+uniform float uSmooth;
+uniform float uCam;
+uniform float uLight;
+
+uniform float uOffsetX;
+uniform float uOffsetY;
+uniform float uAlpha;
+uniform float uFresnelPower;
+uniform float uFresnelIntensity;
+
+float map(vec3 p) {
+    float t = iTime * uSpeed;
+    
+    // Shift cluster using uniforms
+    p.x -= uOffsetX;
+    p.y -= uOffsetY;
+    
+    // Position of 5 orbiting spheres
+    vec3 p1 = vec3(cos(t)*0.8, sin(t*1.3)*0.5, sin(t)*0.8);
+    vec3 p2 = vec3(cos(t*1.1 + 2.0)*0.7, sin(t*0.9 + 1.0)*0.6, cos(t*1.4)*0.6);
+    vec3 p3 = vec3(sin(t*0.8 + 4.0)*0.9, cos(t*1.2 + 3.0)*0.4, sin(t*1.1 + 2.0)*0.7);
+    vec3 p4 = vec3(cos(t*1.5 + 5.0)*0.5, cos(t*0.7 + 1.0)*0.8, sin(t*1.3 + 3.0)*0.5);
+    vec3 p5 = vec3(sin(t*1.2 + 1.0)*0.6, sin(t*1.5 + 4.0)*0.5, cos(t*0.9 + 2.0)*0.8);
+    
+    // Mouse influence
+    vec2 m = (iMouse / iResolution.xy) * 2.0 - 1.0;
+    p.xy -= m * 0.2;
+    
+    float d1 = sdSphere(p - p1, 0.4);
+    float d2 = sdSphere(p - p2, 0.35);
+    float d3 = sdSphere(p - p3, 0.5);
+    float d4 = sdSphere(p - p4, 0.3);
+    float d5 = sdSphere(p - p5, 0.25);
+    
+    float d = smin(d1, d2, uSmooth);
+    d = smin(d, d3, uSmooth);
+    d = smin(d, d4, uSmooth);
+    d = smin(d, d5, uSmooth);
+    
+    return d;
+}
+
+vec3 calcNormal( vec3 p ) {
+    vec2 e = vec2(1.0,-1.0)*0.5773*0.0005;
+    return normalize( e.xyy*map( p + e.xyy ) + e.yyx*map( p + e.yyx ) + e.yxy*map( p + e.yxy ) + e.xxx*map( p + e.xxx ) );
+}
+
+void main() {
+    vec2 uv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;
+    vec3 ro = vec3(0.0, 0.0, uCam);
+    vec3 rd = normalize(vec3(uv, -1.0));
+    
+    float t = 0.0;
+    float max_d = 10.0;
+    vec3 p;
+    for(int i = 0; i < 64; i++) {
+        p = ro + rd * t;
+        float d = map(p);
+        if(d < 0.001 || t > max_d) break;
+        t += d;
+    }
+    
+    vec4 fragCol = vec4(0.0);
+    if(t < max_d) {
+        vec3 n = calcNormal(p);
+        vec3 lightDir = normalize(vec3(cos(uLight), sin(uLight), 1.0));
+        float dif = clamp(dot(n, lightDir), 0.0, 1.0);
+        float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), uFresnelPower);
+        
+        // Base color: #DAF2FF (R: 218/255 = 0.855, G: 242/255 = 0.949, B: 255/255 = 1.0)
+        vec3 tint = vec3(0.855, 0.949, 1.0);
+        
+        // Mix the base color with white highlights instead of making shadows black
+        vec3 col = tint + vec3(1.0) * (dif * 0.3 + fresnel * uFresnelIntensity);
+        
+        // Higher alpha to prevent it from washing out completely against the white background
+        float alpha = clamp(uAlpha + fresnel * 0.25, 0.0, 1.0);
+        fragCol = vec4(col, alpha);
+    }
+    
+    gl_FragColor = fragCol;
+}
+                `;
+                
+                const material = new THREE.ShaderMaterial({
+                    fragmentShader,
+                    uniforms,
+                    transparent: true
+                });
+                
+                const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+                scene.add(plane);
+                
+                window.addEventListener('mousemove', (e) => {
+                    uniforms.iMouse.value.set(e.clientX, window.innerHeight - e.clientY);
+                });
+                
+                window.addEventListener('resize', () => {
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    uniforms.iResolution.value.set(window.innerWidth, window.innerHeight);
+                });
+                
+                const clock = new THREE.Clock();
+                let lastRenderTime = 0;
+                const fpsInterval = 1000 / 30; // Limit to 30 fps
+                
+                function animateShader(currentTime) {
+                    animId = requestAnimationFrame(animateShader);
+                    if (!currentTime) return;
+                    
+                    const elapsed = currentTime - lastRenderTime;
+                    if (elapsed > fpsInterval) {
+                        lastRenderTime = currentTime - (elapsed % fpsInterval);
+                        uniforms.iTime.value = clock.getElapsedTime();
+                        renderer.render(scene, camera);
+                    }
+                }
+                animId = requestAnimationFrame(animateShader);
+            }
+            
+            // Setup animated text
+            if (textContainer) {
+                const text = "Preparing your Bloom...";
+                if (prefersReducedMotion) {
+                    textContainer.textContent = text;
+                } else {
+                    textContainer.innerHTML = text.split('').map((char, i) => {
+                        if (char === ' ') return '&nbsp;';
+                        return `<span class="loading-letter" style="animation-delay: ${i * 0.05}s">${char}</span>`;
+                    }).join('');
+                }
+            }
+            
+            if (progressBar) {
+                // Start fill animation
+                setTimeout(() => {
+                    progressBar.style.transitionDuration = duration + 'ms';
+                    progressBar.style.width = '100%';
+                    
+                    if (percentEl) {
+                        if (prefersReducedMotion) {
+                            percentEl.textContent = '100%';
+                        } else {
+                            const startTime = performance.now();
+                            const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+                            function updatePercent(currentTime) {
+                                const elapsed = currentTime - startTime;
+                                const progress = Math.min(elapsed / duration, 1);
+                                const currentVal = Math.floor(100 * easeOutCubic(progress));
+                                percentEl.textContent = currentVal + '%';
+                                if (progress < 1) {
+                                    requestAnimationFrame(updatePercent);
+                                } else {
+                                    percentEl.textContent = '100%';
+                                }
+                            }
+                            requestAnimationFrame(updatePercent);
+                        }
+                    }
+                }, 50); // slight delay to allow rendering
+            }
+            
+            // Hide splash screen after duration
+            setTimeout(() => {
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    // Remove from DOM after fade out
+                    setTimeout(() => {
+                        splash.remove();
+                        if (animId) cancelAnimationFrame(animId);
+                        if (renderer) renderer.dispose();
+                    }, 600);
+                }
+            }, duration + 400); // Add a small buffer after bar fills
+        });
+    </script>
     <div id="header-scaler"
         style="position: fixed; top: 0; left: 0; width: 1920px; z-index: 9999; pointer-events: none; transform-origin: top left;">
         <header
@@ -302,8 +562,7 @@
                 </div>
                 <div class="" data-node-id="71:756" data-name="3. Main-Solution"
                     style="position: absolute; background-color: black; height: 1080px; left: 0; overflow: hidden; top: 2520px; width: 1920px;">
-                    <video class="" data-node-id="82:67" src="assets/3.Main-Solution-Video.mp4" autoplay loop muted
-                        playsinline
+                    <video class="" data-node-id="82:67" src="assets/main-3-2-video.mp4" autoplay loop muted playsinline
                         style="position: absolute; height: 1080px; left: 0; top: 0; width: 1920px; object-fit: cover;"></video>
                     <div id="main-solution-content-wrapper"
                         style="position: absolute; top: -80px; left: 0px; width: 100%; height: 100%;">
@@ -320,16 +579,20 @@
                         <div id="solution-text-2" class="" data-node-id="71:765"
                             style="transform: translateX(-50%); word-break: break-word; position: absolute; font-family: 'Pretendard', sans-serif; font-weight: 400; line-height: 0; left: 50%; font-style: normal; color: #1e1e1e; font-size: 20px; text-align: center; top: calc(50% + 14px); letter-spacing: -0.6px; white-space: nowrap;">
                             <p class="" style="line-height: 1.4; margin-bottom: 0; white-space: nowrap;">BLOOM은 기분, 날씨,
-                                계절,
-                                원하는 분위기를 바탕으로</p>
-                            <p class="" style="line-height: 1.4; margin-bottom: 0; white-space: nowrap;">오늘의 감각에 맞는 향과
-                                색의
-                                비누를 추천합니다.</p>
-                            <p class="" style="line-height: 1.4; margin-bottom: 0; white-space: nowrap;">제품 나열이 아닌, 질문
-                                기반
-                                큐레이션을 통해</p>
-                            <p class="" style="line-height: 1.4; white-space: nowrap;">사용자가 자신의 하루와 연결되는 비누를 발견하도록 합니다.
-                            </p>
+                                계절에 맞는 비누를 질문 기반으로<br>
+                                큐레이션해, 하루와 연결되는 선택을 제안합니다.</p>
+                            <div
+                                style="display: flex; gap: 12px; justify-content: center; margin-top: 36px; line-height: 1.2;">
+                                <div
+                                    style="border: 1px solid #1e1e1e; border-radius: 500px; padding: 10px 20px; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+                                    #Mood Based</div>
+                                <div
+                                    style="border: 1px solid #1e1e1e; border-radius: 500px; padding: 10px 20px; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+                                    #Curated Questions</div>
+                                <div
+                                    style="border: 1px solid #1e1e1e; border-radius: 500px; padding: 10px 20px; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+                                    #Daily Ritual</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -798,7 +1061,7 @@
             }
 
             let targetText = typewriterTextData[currentP];
-            currentChar += 5; // advance 5 chars
+            currentChar += 2; // advance 2 chars for smoother auto-typing
             if (currentChar > targetText.length) currentChar = targetText.length;
 
             if (paragraphs[currentP]) {
@@ -810,6 +1073,12 @@
                 currentChar = 0;
                 if (currentP >= typewriterTextData.length) {
                     isTypewriterFinished = true;
+                    for (let i = 1; i <= 3; i++) {
+                        setTimeout(() => {
+                            const items = document.querySelectorAll('.problem-item-' + i);
+                            items.forEach(item => item.classList.add('reveal-item'));
+                        }, i * 200);
+                    }
                 }
             }
         }
@@ -836,14 +1105,20 @@
                     void item.offsetWidth;
                 });
 
-                for (let i = 1; i <= 3; i++) {
-                    setTimeout(() => {
-                        const items = document.querySelectorAll('.problem-item-' + i);
-                        items.forEach(item => item.classList.add('reveal-item'));
-                    }, 500 + (i * 200));
+                resetTypewriter();
+                if (window.typewriterIntervalId) {
+                    clearInterval(window.typewriterIntervalId);
                 }
 
-                resetTypewriter();
+                setTimeout(() => {
+                    window.typewriterIntervalId = setInterval(() => {
+                        if (isTypewriterFinished) {
+                            clearInterval(window.typewriterIntervalId);
+                        } else {
+                            advanceTypewriter();
+                        }
+                    }, 60);
+                }, 1000);
             } else if (index === 2) {
                 const solImg = document.getElementById('solution-img');
                 const solT1 = document.getElementById('solution-text-1');
@@ -968,13 +1243,13 @@
                 activeSectionIndex = overrideSectionIndex;
                 currentStep = 0;
                 keyFeaturesStep = 0;
-                
+
                 if (activeSectionIndex === 1) {
                     isTypewriterFinished = false; // Reset to play again
                 }
-                
+
                 updateHeaderTheme();
-                triggerSectionAnimations(activeSectionIndex);
+                if (activeSectionIndex !== 0) triggerSectionAnimations(activeSectionIndex);
                 updateSteps();
                 updateKeyFeatures();
                 saveScrollState();
@@ -998,13 +1273,13 @@
                     }
 
                     updateHeaderTheme();
-                    triggerSectionAnimations(activeSectionIndex);
+                    if (activeSectionIndex !== 0) triggerSectionAnimations(activeSectionIndex);
                     updateSteps();
                     updateKeyFeatures();
                 } catch (e) { }
             } else {
                 updateHeaderTheme();
-                triggerSectionAnimations(activeSectionIndex);
+                if (activeSectionIndex !== 0) triggerSectionAnimations(activeSectionIndex);
                 updateSteps();
                 updateKeyFeatures();
             }
@@ -1025,17 +1300,23 @@
                 const heroContent = document.getElementById('hero-content-wrapper');
 
                 if (activeSectionIndex === 0) {
-                    if (logoContainer) logoContainer.classList.add('reveal-logo');
-                    // heroContent is handled in triggerSectionAnimations(0)
-
-                    // When Logo is ~50% opacity (0.4s into 0.8s animation), reveal menus with stagger
+                    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    const splashDelay = prefersReducedMotion ? 0 : 2600;
+                    
                     setTimeout(() => {
-                        navLinks.forEach((link, index) => {
-                            setTimeout(() => {
-                                link.classList.add('reveal-menu');
-                            }, index * 50);
-                        });
-                    }, 400);
+                        triggerSectionAnimations(0);
+                        if (logoContainer) logoContainer.classList.add('reveal-logo');
+                        // heroContent is handled in triggerSectionAnimations(0)
+
+                        // When Logo is ~50% opacity (0.4s into 0.8s animation), reveal menus with stagger
+                        setTimeout(() => {
+                            navLinks.forEach((link, index) => {
+                                setTimeout(() => {
+                                    link.classList.add('reveal-menu');
+                                }, index * 50);
+                            });
+                        }, 400);
+                    }, splashDelay);
                 } else {
                     // Instantly reveal header elements without animation if loaded mid-page
                     if (logoContainer) {
@@ -1117,15 +1398,6 @@
             globalScrollAccumulator += deltaY;
 
             if (globalScrollAccumulator > 0) { // 아래로 스크롤
-                // 타자기 효과 인터셉트
-                if (activeSectionIndex === 1 && !isTypewriterFinished && section1EnterDirection === 'down') {
-                    if (globalScrollAccumulator > 30) {
-                        advanceTypewriter();
-                        globalScrollAccumulator = 0; // 스크롤 무효화 후 리셋
-                    }
-                    return;
-                }
-
                 let threshold = 800; // 섹션 간 기본 이동 요구치
                 let isHowItWorks = (activeSectionIndex === 4); // How it works 섹션
                 let isKeyFeatures = (activeSectionIndex === 3); // Key Features 섹션
@@ -1172,15 +1444,6 @@
                     }
                 }
             } else if (globalScrollAccumulator < 0) { // 위로 스크롤
-                // 타자기 효과 인터셉트 (위로 스크롤 진입 시)
-                if (activeSectionIndex === 1 && !isTypewriterFinished && section1EnterDirection === 'up') {
-                    if (globalScrollAccumulator < -30) {
-                        advanceTypewriter();
-                        globalScrollAccumulator = 0; // 스크롤 무효화 후 리셋
-                    }
-                    return;
-                }
-
                 let threshold = -800;
                 let isHowItWorks = (activeSectionIndex === 4);
                 let isKeyFeatures = (activeSectionIndex === 3);
@@ -1807,11 +2070,40 @@
     </script>
     <!-- Liquid Blob Cursor Component -->
     <div id="liquid-blob-wrapper" aria-hidden="true">
-        <div class="blob-container" id="blob-main-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path id="blob-main" fill="var(--blob-color)"></path></svg></div>
-        <div class="blob-container" id="blob-sat1-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path id="blob-sat1" fill="var(--blob-color)"></path></svg></div>
-        <div class="blob-container" id="blob-sat2-container"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path id="blob-sat2" fill="var(--blob-color)"></path></svg></div>
+        <div class="blob-container" id="blob-main-container"><svg viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg">
+                <path id="blob-main" fill="var(--blob-color)"></path>
+            </svg></div>
+        <div class="blob-container" id="blob-sat1-container"><svg viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg">
+                <path id="blob-sat1" fill="var(--blob-color)"></path>
+            </svg></div>
+        <div class="blob-container" id="blob-sat2-container"><svg viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg">
+                <path id="blob-sat2" fill="var(--blob-color)"></path>
+            </svg></div>
     </div>
     <script src="liquid-blob.js"></script>
-</body>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const videos = document.querySelectorAll("video");
+            if ('IntersectionObserver' in window) {
+                const videoObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const video = entry.target;
+                        if (entry.isIntersecting) {
+                            video.play().catch(e => console.warn("Video play prevented:", e));
+                        } else {
+                            video.pause();
+                        }
+                    });
+                }, { threshold: 0.1 });
 
+                videos.forEach(video => {
+                    videoObserver.observe(video);
+                });
+            }
+        });
+    </script>
+</body>
 </html>

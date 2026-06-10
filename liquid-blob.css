@@ -4,7 +4,7 @@
 }
 :root {
   --blob-size: 80px;
-  --blob-color: #ffffff;
+  --blob-color: #DAF2FF;
   --blob-duration: 8;
   --blob-opacity: 0.9;
   --blob-radius: 28;
@@ -20,8 +20,6 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   will-change: transform;
-  /* mix-blend-mode: difference ensures the white cursor turns black on white backgrounds */
-  mix-blend-mode: difference; 
 }
 
 #blob-main-container {
@@ -32,11 +30,13 @@
 #blob-sat1-container {
   width: calc(var(--blob-size) * 0.4);
   height: calc(var(--blob-size) * 0.4);
+  filter: brightness(0.85); /* Slightly darker for medium blob */
 }
 
 #blob-sat2-container {
   width: calc(var(--blob-size) * 0.25);
   height: calc(var(--blob-size) * 0.25);
+  filter: brightness(0.7); /* Even darker for smallest blob */
 }
 
 .blob-container svg {
